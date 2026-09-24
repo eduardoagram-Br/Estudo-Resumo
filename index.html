@@ -1283,8 +1283,10 @@ function adjustRead(id, delta, evt){
   readCounts[id] = Math.max(0, current + delta);
   saveReadCounts();
   logReview(id, delta);
-  const countEl = document.getElementById('count-'+id);
-  if(countEl) countEl.textContent = readCounts[id];
+  const topEl = document.getElementById('count-top-'+id);
+  if(topEl) topEl.textContent = readCounts[id];
+  const bottomEl = document.getElementById('count-bottom-'+id);
+  if(bottomEl) bottomEl.textContent = readCounts[id];
   const pagesEl = document.getElementById('pagesTotal-'+id);
   if(pagesEl){
     const t = getAllTopics().find(x=>x.id===id);
@@ -1666,18 +1668,24 @@ function renderTopicList(list, containerId){
         <h3>${t.priority?'⭐ ':''}${t.n} · ${t.title}</h3>
         <span class="status">
           ${t.ready ? '✅' : '🕓'}
-          ${pages ? `<span class="muted" style="font-size:.68rem" title="Estimativa de páginas A4 equivalentes">📄${pages}p</span>` : ''}
-          <span class="readctrl" onclick="event.stopPropagation()">
-            <button onclick="adjustRead('${t.id}',-1,event)">−</button>
-            <span id="count-${t.id}">${readCounts[t.id]||0}</span>
-            <button onclick="adjustRead('${t.id}',1,event)">+</button>
-          </span>
-          ${pages ? `<span class="muted" style="font-size:.65rem">(<span id="pagesTotal-${t.id}">${(readCounts[t.id]||0)*pages}</span>p lidas)</span>` : ''}
+          ${pages ? `<span class="muted" style="font-size:.68rem" title="Páginas da apostila">📄${pages}p</span>` : ''}
+          <span class="muted" style="font-size:.7rem" title="Vezes que você marcou este tópico como lido">👁️ <span id="count-top-${t.id}">${readCounts[t.id]||0}</span>x</span>
           <a href="${link}" target="_blank" class="microbtn" onclick="event.stopPropagation()" title="Conferir fonte oficial">🔗</a>
           <button class="microbtn" onclick="printTopic('${t.id}',event)" title="Imprimir só este tópico">🖨️</button>
         </span>
       </div>
-      <div class="topic-body" id="body-${t.id}">${t.body || '<p class="muted">Conteúdo ainda não adicionado.</p>'}</div>
+      <div class="topic-body" id="body-${t.id}">
+        ${t.body || '<p class="muted">Conteúdo ainda não adicionado.</p>'}
+        <div class="row" style="justify-content:center;align-items:center;gap:10px;margin-top:22px;padding-top:16px;border-top:1px dashed var(--border)" onclick="event.stopPropagation()">
+          <span class="muted" style="font-size:.82rem">Terminou de ler? Marque aqui:</span>
+          <span class="readctrl" style="font-size:.9rem">
+            <button onclick="adjustRead('${t.id}',-1,event)" style="width:26px;height:26px;font-size:1rem">−</button>
+            <span id="count-bottom-${t.id}" style="min-width:18px;text-align:center;display:inline-block">${readCounts[t.id]||0}</span>
+            <button onclick="adjustRead('${t.id}',1,event)" style="width:26px;height:26px;font-size:1rem">+</button>
+          </span>
+          ${pages ? `<span class="muted" style="font-size:.75rem">(<span id="pagesTotal-${t.id}">${(readCounts[t.id]||0)*pages}</span>p lidas no total)</span>` : ''}
+        </div>
+      </div>
     `;
     el.appendChild(card);
   });
