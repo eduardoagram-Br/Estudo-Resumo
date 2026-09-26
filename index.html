@@ -1578,8 +1578,13 @@ function renderPerformanceHTML(){
   }));
   const maxSubjPages = Math.max(1, ...subjPages.map(s=>s.value));
 
+  const allTopics = getAllTopics();
+  const grandTotalPages = allTopics.reduce((a,t)=>a + estimatePages(t)*(readCounts[t.id]||0), 0);
+
   return `
+    <div class="widget-title">📈 Desempenho de leitura (páginas fixas por tópico)</div>
     <div class="stats" style="margin-bottom:14px">
+      <div class="stat" style="border-color:var(--accent)"><b>${grandTotalPages}</b><span>páginas no total (todas as matérias, desde o início)</span></div>
       <div class="stat"><b>${today.pages}</b><span>páginas hoje (${today.reads}x)</span></div>
       <div class="stat"><b>${week.pages}</b><span>páginas nos últimos 7 dias</span></div>
       <div class="stat"><b>${year.pages}</b><span>páginas em ${now.getFullYear()}</span></div>
@@ -1603,10 +1608,11 @@ function renderCoverageHTML(){
   const contentPct = total ? Math.round(100*withContent/total) : 0;
   const priorityTopics = topics.filter(t=>t.priority);
   return `
+    <div class="widget-title">📚 Cobertura geral (todas as matérias somadas)</div>
     <div class="row" style="align-items:center;gap:24px;margin-bottom:6px">
-      <div style="text-align:center">${donutSVG(coveragePct)}<div class="muted" style="font-size:.68rem;margin-top:4px">lidos 1x+</div></div>
-      <div style="text-align:center">${donutSVG(contentPct)}<div class="muted" style="font-size:.68rem;margin-top:4px">com conteúdo</div></div>
-      <div class="stat" style="flex:1;min-width:90px"><b>${totalReads}</b><span>leituras no total</span></div>
+      <div style="text-align:center">${donutSVG(coveragePct)}<div class="muted" style="font-size:.68rem;margin-top:4px;max-width:90px">% dos tópicos já abertos ao menos 1x (${opened}/${total})</div></div>
+      <div style="text-align:center">${donutSVG(contentPct)}<div class="muted" style="font-size:.68rem;margin-top:4px;max-width:90px">% dos tópicos já com conteúdo escrito (${withContent}/${total})</div></div>
+      <div class="stat" style="flex:1;min-width:90px"><b>${totalReads}</b><span>marcações de leitura (soma de todos os cliques em todas as matérias)</span></div>
     </div>
     ${priorityTopics.length ? `<div style="margin-top:10px">${priorityTopics.map(t=>`<span class="pill" style="background:rgba(245,158,11,.15);color:var(--medium);margin-bottom:6px;display:inline-block">⭐ ${readCounts[t.id]||0}x ${t.title.split('—')[0].trim()}</span>`).join(' ')}</div>` : ''}
   `;
@@ -1616,10 +1622,15 @@ function renderBySubjectHTML(){
   const subjects = getSubjects();
   const subjTotals = subjects.map(s=>({label:s.label, value:s.list.reduce((a,t)=>a+(readCounts[t.id]||0),0)}));
   const max1 = Math.max(1, ...subjTotals.map(s=>s.value));
+  const subjRead = subjects.map(s=>({label:s.label, value:s.list.length ? Math.round(100*s.list.filter(t=>(readCounts[t.id]||0)>0).length/s.list.length) : 0}));
   const subjContent = subjects.map(s=>({label:s.label, value:s.list.length ? Math.round(100*s.list.filter(t=>t.ready).length/s.list.length) : 0}));
-  return `<p class="muted" style="margin:0 0 8px;font-size:.78rem">Leituras por matéria</p>` +
+  return `
+    <div class="widget-title">📊 Comparativo entre matérias</div>
+    <p class="muted" style="margin:0 0 8px;font-size:.78rem"><b>Total de marcações de leitura</b> por matéria (soma dos cliques, não é %):</p>` +
     subjTotals.map(s=>barRow(s.label, s.value, max1)).join('') +
-    `<p class="muted" style="margin:14px 0 8px;font-size:.78rem">% de conteúdo pronto por matéria</p>` +
+    `<p class="muted" style="margin:16px 0 8px;font-size:.78rem"><b>% de tópicos já lidos ao menos 1x</b> em cada matéria (quanto você já cobriu):</p>` +
+    subjRead.map(s=>barRow(s.label, s.value, 100)).join('') +
+    `<p class="muted" style="margin:16px 0 8px;font-size:.78rem"><b>% de tópicos com conteúdo já escrito</b> em cada matéria (isso mede o que EU já preparei, não o que você leu):</p>` +
     subjContent.map(s=>barRow(s.label, s.value, 100)).join('');
 }
 
@@ -1627,7 +1638,8 @@ function renderRankingHTML(){
   const allTopics = getAllTopics();
   const sortedByReads = [...allTopics].sort((a,b)=>(readCounts[b.id]||0)-(readCounts[a.id]||0)).slice(0,7);
   const max = Math.max(1, ...sortedByReads.map(t=>readCounts[t.id]||0));
-  return `<p class="muted" style="margin:0 0 10px;font-size:.78rem">Top 7 mais lidos</p>` +
+  return `
+    <div class="widget-title">🏆 Top 7 tópicos mais revisados</div>` +
     sortedByReads.map(t=>barRow((t.priority?'⭐':'')+t.n+' '+t.title.split('—')[0].trim(), readCounts[t.id]||0, max)).join('');
 }
 
