@@ -434,7 +434,7 @@ const saudeTopics = [
 ];
 
 const topics = [
-  {id:"intro", n:"01", title:"Introdução à Segurança do Trabalho", ready:true, body:`
+  {id:"intro", n:"01", title:"Introdução à Segurança do Trabalho", ready:true, pages:2, body:`
     <h4>Histórico</h4>
     <p>A segurança do trabalho evoluiu de uma abordagem reativa (agir só depois do acidente) para uma abordagem preventiva e, mais recentemente, para a <b>gestão de riscos</b> (antecipar e controlar antes que o dano ocorra). No Brasil, o marco regulatório central é a CLT (1943) e, a partir de 1978, as Normas Regulamentadoras (NRs) da Portaria MTb nº 3.214.</p>
     <h4>Conceitos fundamentais</h4>
@@ -449,7 +449,7 @@ const topics = [
     <h4>Pirâmide de Heinrich / Bird</h4>
     <p>Conceito clássico cobrado em concursos: para cada acidente com lesão grave/fatal, existe um número muito maior de acidentes leves, e um número ainda maior de incidentes sem lesão (quase-acidentes) na base da pirâmide — reforçando a importância de investigar e corrigir os quase-acidentes antes que se tornem acidentes graves.</p>
   `},
-  {id:"legislacao", n:"02", title:"Legislação de Segurança do Trabalho", ready:true, link:"https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm", body:`
+  {id:"legislacao", n:"02", title:"Legislação de Segurança do Trabalho", ready:true, pages:2, link:"https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm", body:`
     <h4>Constituição Federal</h4>
     <p>Art. 7º, XXII: são direitos dos trabalhadores urbanos e rurais a <b>redução dos riscos inerentes ao trabalho, por meio de normas de saúde, higiene e segurança</b>. Art. 7º, XXVIII: seguro contra acidentes de trabalho, a cargo do empregador, sem excluir a indenização a que este está obrigado quando incorrer em dolo ou culpa.</p>
     <h4>CLT — Consolidação das Leis do Trabalho</h4>
@@ -465,7 +465,7 @@ const topics = [
       <li><b>Convenção 187:</b> Quadro Promocional para a Segurança e Saúde no Trabalho.</li>
     </ul>
   `},
-  {id:"nrs", n:"03", title:"Normas Regulamentadoras (NRs) — Estrutura", ready:true, body:`
+  {id:"nrs", n:"03", title:"Normas Regulamentadoras (NRs) — Estrutura", ready:true, pages:3, body:`
     <h4>Origem</h4>
     <p>As NRs foram criadas pela <b>Portaria MTb nº 3.214, de 08/06/1978</b>, regulamentando o Capítulo V da CLT (alterado pela Lei nº 6.514/1977). Inicialmente eram 28 normas; hoje já passam de 38 (com a inclusão de NRs setoriais como a NR-38, sobre plataformas de petróleo).</p>
     <h4>Tipos de NR</h4>
@@ -479,7 +479,7 @@ const topics = [
     <h4>Processo de revisão das NRs</h4>
     <p>Desde 2019, as alterações nas NRs passam por um processo tripartite (governo, empregadores e trabalhadores) coordenado pela <b>Comissão Tripartite Paritária Permanente (CTPP)</b>, substituindo o antigo modelo. As minutas passam por consulta pública antes da publicação final.</p>
   `},
-  {id:"nr01", n:"04", title:"NR-01 — Disposições Gerais e PGR", ready:true, body:`
+  {id:"nr01", n:"04", title:"NR-01 — Disposições Gerais e PGR", ready:true, pages:2, body:`
     <p>Base legal atual: Portaria MTb nº 3.214/1978, com redação vigente dada pelas Portarias SEPRT/MTE mais recentes (última alteração relevante: Portaria MTE nº 1.419/2024, sobre riscos psicossociais).</p>
     <h4>Objetivo e campo de aplicação</h4>
     <p>A NR-01 estabelece as disposições gerais, o campo de aplicação e os termos comuns a todas as NRs, além das diretrizes para o Gerenciamento de Riscos Ocupacionais (GRO). Obriga, nos termos da lei, empregadores e empregados urbanos e rurais, e é de observância obrigatória por organizações e órgãos públicos (diretos e indiretos) que possuam empregados regidos pela CLT.</p>
@@ -495,7 +495,7 @@ const topics = [
     <h4>Hierarquia das medidas de prevenção</h4>
     <p>Ordem de prioridade: 1) eliminação dos fatores de risco; 2) minimização e controle dos riscos, com adoção de medidas de proteção coletiva; 3) minimização e controle dos riscos, com adoção de medidas administrativas ou de organização do trabalho; 4) EPI, de forma complementar, provisória ou emergencial.</p>
   `},
-  {id:"nr05", n:"05", title:"NR-05 — CIPA", ready:true, body:`
+  {id:"nr05", n:"05", title:"NR-05 — CIPA", ready:true, pages:2, body:`
     <p>Base legal atual: Portaria MTb nº 3.214/1978, redação dada pela Portaria MTP nº 422/2021. Texto oficial na íntegra (resumindo apenas o quadro de dimensionamento em formato de lista, para caber melhor na leitura).</p>
     <h4>5.1 Objetivo</h4>
     <p>5.1.1 Esta NR estabelece os parâmetros e requisitos da CIPA, com objetivo de prevenção de acidentes e doenças relacionadas ao trabalho, tornando compatível permanentemente o trabalho com a preservação da vida e promoção da saúde do trabalhador.</p>
@@ -521,7 +521,7 @@ const topics = [
     <h4>Anexo I — CIPA na Indústria da Construção</h4>
     <p>CIPA por canteiro de obras quando o nº de empregados se enquadrar no Quadro I; senão, nomeia-se representante da NR-05. Dispensada CIPA por frente de trabalho (mas exige-se representante nomeado). Obras de até 180 dias de duração são dispensadas de CIPA (mas exigem representante da NR-05, com treinamento mínimo de 8h). CIPA do canteiro se encerra quando as atividades da obra terminam.</p>
   `},
-  {id:"nr06", n:"06", title:"NR-06 — Equipamentos de Proteção Individual", ready:true, link:"https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-06.pdf", body:`
+  {id:"nr06", n:"06", title:"NR-06 — Equipamentos de Proteção Individual", ready:true, pages:2, link:"https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-06.pdf", body:`
     <p>Base legal: Portaria MTb nº 3.214/1978, com últimas alterações relevantes pelas Portarias MTb nº 877/2018 e MTP nº 2.175/2022. Texto oficial.</p>
     <h4>6.1 Definição</h4>
     <p>6.1.1 EPI é todo dispositivo ou produto de uso individual utilizado pelo trabalhador, destinado à proteção de riscos suscetíveis de ameaçar a segurança e a saúde no trabalho. 6.1.1 (equipamento conjugado): composto por vários dispositivos associados pelo fabricante contra um ou mais riscos simultâneos.</p>
@@ -554,7 +554,7 @@ const topics = [
       <li><b>Proteção contra quedas com diferença de nível:</b> cinturão de segurança com dispositivo trava-queda; cinturão de segurança com talabarte (restrição de queda ou posicionamento em trabalho em altura).</li>
     </ul>
   `},
-  {id:"nr07", n:"07", title:"NR-07 — PCMSO", ready:true, body:`
+  {id:"nr07", n:"07", title:"NR-07 — PCMSO", ready:true, pages:2, body:`
     <p>Base legal: Portaria MTb nº 3.214/1978, redação dada pela Portaria SEPRT nº 6.734/2020, com ajustes pela Portaria MTP nº 567/2022.</p>
     <h4>7.1 Objetivo</h4>
     <p>Estabelece a obrigatoriedade de elaboração e implementação do PCMSO pelas organizações, com o objetivo de proteger e preservar a saúde dos empregados em relação aos riscos ocupacionais, conforme avaliação de riscos do PGR (NR-01).</p>
@@ -580,7 +580,7 @@ const topics = [
     <h4>Termos-chave</h4>
     <p><b>Médico Coordenador:</b> coordena o PCMSO, podendo ou não realizar os exames, e pode encarregar outros profissionais/entidades para os exames complementares. <b>Médico Encarregado:</b> profissional habilitado em Medicina do Trabalho (ou familiarizado com patologia ocupacional) responsável por realizar os exames periódicos.</p>
   `},
-  {id:"nr09", n:"08", title:"NR-09 — Avaliação e Controle das Exposições / Higiene Ocupacional", ready:true, body:`
+  {id:"nr09", n:"08", title:"NR-09 — Avaliação e Controle das Exposições / Higiene Ocupacional", ready:true, pages:2, body:`
     <p>Base legal: Portaria MTb nº 3.214/1978, redação dada pela Portaria SEPRT nº 6.735/2020 (vigência a partir de 03/01/2022). Desde a revisão de 2020/2022, a NR-09 mudou de nome — deixou de ser o "PPRA" e passou a se chamar <b>Avaliação e Controle das Exposições Ocupacionais a Agentes Físicos, Químicos e Biológicos</b>, funcionando como apoio técnico ao PGR (NR-01), sem mais existir como programa autônomo.</p>
     <h4>9.1 Objetivo</h4>
     <p>Estabelece os requisitos para a avaliação das exposições ocupacionais a agentes físicos, químicos e biológicos quando identificados no PGR (NR-01), subsidiando-o quanto às medidas de prevenção dos riscos ocupacionais.</p>
@@ -597,7 +597,7 @@ const topics = [
     <h4>Ponto de atenção para prova</h4>
     <p>É comum a banca cobrar a diferença entre avaliação <b>qualitativa</b> (baseada em reconhecimento/descrição, sem medição) e <b>quantitativa</b> (com medição/comparação a limites de tolerância, geralmente usando os critérios técnicos da NR-15 para agentes insalubres).</p>
   `},
-  {id:"nr10", n:"09", title:"NR-10 — Segurança em Instalações Elétricas", ready:true, priority:true, link:"https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-10-atualizada-2019-1.pdf", body:`
+  {id:"nr10", n:"09", title:"NR-10 — Segurança em Instalações Elétricas", ready:true, pages:2, priority:true, link:"https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-10-atualizada-2019-1.pdf", body:`
     <p><b>⭐ Prioridade alta.</b> Base legal: Portaria MTb nº 3.214/1978, texto dado pela Portaria MTE nº 598/2004, com alterações posteriores (Portaria MTPS nº 508/2016). Atenção: em maio/2026 foi publicada uma revisão profunda da NR-10 (Portaria MTE nº 737/2026), mas ela só entra em vigor em 01/06/2027 — o texto abaixo é o que está <b>vigente hoje</b> e é o que vale pra prova de 2026.</p>
     <h4>10.1 Objetivo e campo de aplicação</h4>
     <p>Estabelece requisitos e condições mínimas para implementar medidas de controle e sistemas preventivos, garantindo segurança e saúde de quem interage direta ou indiretamente com instalações elétricas. Aplica-se a geração, transmissão, distribuição e consumo, incluindo projeto, construção, montagem, operação e manutenção.</p>
@@ -634,7 +634,7 @@ const topics = [
     <h4>Anexo III — Treinamento (resumo)</h4>
     <p>Curso básico de Segurança em Instalações e Serviços com Eletricidade: <b>carga horária mínima de 40h</b> para trabalhadores autorizados, cobrindo riscos elétricos, técnicas de análise de risco, medidas de controle, normas técnicas (NBR-5410 etc.), EPC/EPI, procedimentos de trabalho, riscos adicionais, combate a incêndio e primeiros socorros. Curso complementar de Segurança no SEP e proximidades: pré-requisito é o curso básico; também <b>40h mínimas</b>, focado em linha viva, trabalho a distância, riscos típicos do SEP e técnicas específicas de alta tensão.</p>
   `},
-  {id:"nr12", n:"10", title:"NR-12 — Segurança em Máquinas e Equipamentos", ready:true, link:"https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/NR12atualizada2023.pdf", body:`
+  {id:"nr12", n:"10", title:"NR-12 — Segurança em Máquinas e Equipamentos", ready:true, pages:2, link:"https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/NR12atualizada2023.pdf", body:`
     <p>Base legal: Portaria MTb nº 3.214/1978, redação dada pela Portaria SEPRT nº 916/2019, última atualização pela Portaria MTP nº 4.219/2022. É uma das NRs mais extensas — aqui vai um resumo estruturado dos pontos mais cobrados; a norma completa tem 18 itens (12.1 a 12.18) e 12 anexos.</p>
     <h4>12.1 Princípios gerais</h4>
     <p>Define referências técnicas e medidas de proteção para todas as fases: projeto, fabricação, importação, comercialização e <b>utilização</b> (que inclui transporte, montagem, instalação, ajuste, operação, limpeza, manutenção, inspeção, desativação e desmonte). Vale para máquinas novas e usadas.</p>
@@ -664,7 +664,7 @@ const topics = [
       <li><b>Categoria (B, 1, 2, 3, 4):</b> classificação de sistemas de comando relacionados à segurança quanto à resistência a defeitos (ABNT NBR 14153 / ISO 13849).</li>
     </ul>
   `},
-  {id:"nr13", n:"11", title:"NR-13 — Caldeiras, Vasos de Pressão e Tubulações", ready:true, body:`
+  {id:"nr13", n:"11", title:"NR-13 — Caldeiras, Vasos de Pressão e Tubulações", ready:true, pages:2, body:`
     <p>Base legal: Portaria MTb nº 3.214/1978, redação dada pela Portaria MTb nº 1.084/2017, com atualização pela Portaria MTP nº 1.846/2022 (que incluiu tanques metálicos de armazenamento no escopo/título).</p>
     <h4>13.1 Introdução</h4>
     <p>Estabelece requisitos mínimos para a gestão da integridade estrutural de caldeiras a vapor, vasos de pressão e suas tubulações de interligação, nos aspectos de instalação, inspeção, operação e manutenção. O empregador é o responsável pela adoção das medidas da norma.</p>
@@ -686,7 +686,7 @@ const topics = [
     <h4>Anexos</h4>
     <p>Anexo I – Capacitação de Pessoal (operadores de caldeira, inspetores); Anexo II – Requisitos para certificação de Serviço Próprio de Inspeção de Equipamentos (SPIE), permitindo que a própria empresa realize inspeções com equipe própria certificada.</p>
   `},
-  {id:"nr17", n:"12", title:"NR-17 — Ergonomia", ready:true, body:`
+  {id:"nr17", n:"12", title:"NR-17 — Ergonomia", ready:true, pages:2, body:`
     <p>Base legal: Portaria MTb nº 3.214/1978, nova redação dada pela Portaria MTP nº 423/2021 (a chamada "Nova NR-17"), com ajuste pela Portaria MTP nº 4.219/2022.</p>
     <h4>17.1/17.2 Objetivo e campo de aplicação</h4>
     <p>Estabelece parâmetros que permitam a adaptação das condições de trabalho às características psicofisiológicas dos trabalhadores, de modo a proporcionar conforto, segurança e desempenho eficiente. Aplica-se a organizações e órgãos públicos com empregados CLT (mesmo campo de aplicação das demais NRs gerais).</p>
@@ -703,7 +703,7 @@ const topics = [
     <h4>Ponto de atenção para prova</h4>
     <p>A Lei nº 14.442/2022 (que regulamentou o teletrabalho na CLT, art. 75-E) exige que o empregador instrua os empregados sobre prevenção de doenças/acidentes no ambiente domiciliar; a NR-17, ao criar a AEP como exigência universal, passou a alcançar também postos de trabalho remotos (home office).</p>
   `},
-  {id:"nr20", n:"13", title:"NR-20 — Segurança com Inflamáveis e Combustíveis", ready:true, body:`
+  {id:"nr20", n:"13", title:"NR-20 — Segurança com Inflamáveis e Combustíveis", ready:true, pages:3, body:`
     <p><b>Muito relevante para Transpetro</b> (petróleo/derivados). Base legal: Portaria MTb nº 3.214/1978, redação dada pela Portaria MTE nº 308/2012.</p>
     <h4>Campo de aplicação e exceções</h4>
     <p>Estabelece requisitos mínimos para gestão da SST nas atividades de extração, produção, armazenamento, transferência, manuseio e manipulação de inflamáveis e líquidos combustíveis. <b>Não se aplica</b> a: plataformas e instalações de apoio para exploração/produção de petróleo e gás no subsolo marinho (regidas pela NR-37) e a edificações residenciais unifamiliares.</p>
@@ -724,7 +724,7 @@ const topics = [
     <h4>Anexos</h4>
     <p>Anexo I – exceções à Tabela 1 de classificação; Anexo III – Tanques de inflamáveis no interior de edifícios; Anexo IV – Exposição ocupacional ao benzeno em postos revendedores de combustíveis.</p>
   `},
-  {id:"nr33", n:"14", title:"NR-33 — Espaços Confinados", ready:true, priority:true, body:`
+  {id:"nr33", n:"14", title:"NR-33 — Espaços Confinados", ready:true, pages:2, priority:true, body:`
     <p><b>⭐ Prioridade alta.</b> Base legal: Portaria GM nº 202/2006, com nova redação dada pela Portaria MTP nº 1.690/2022 (em vigor desde 03/10/2022).</p>
     <h4>33.1/33.2 Objetivo e definição</h4>
     <p>Estabelece requisitos para caracterização de espaços confinados, critérios para gerenciamento de riscos ocupacionais nesses espaços e medidas de prevenção. <b>Espaço confinado</b> é qualquer área/ambiente que atenda simultaneamente: a) não projetado para ocupação humana contínua; b) meios limitados de entrada e saída; e c) exista ou possa existir atmosfera perigosa (deficiência/enriquecimento de oxigênio, contaminantes nocivos, ou atmosfera explosiva).</p>
@@ -743,7 +743,7 @@ const topics = [
     </ul>
     <p class="muted">Observação: a norma completa também trata do gerenciamento de riscos ocupacionais (identificação de perigos, avaliação atmosférica, monitoramento contínuo) e do Programa de Proteção Respiratória — vou detalhar isso numa próxima atualização do arquivo.</p>
   `},
-  {id:"nr35", n:"15", title:"NR-35 — Trabalho em Altura", ready:true, priority:true, body:`
+  {id:"nr35", n:"15", title:"NR-35 — Trabalho em Altura", ready:true, pages:2, priority:true, body:`
     <p><b>⭐ Prioridade alta.</b> Base legal: Portaria SIT nº 313/2012, com redação dada pela Portaria MTP nº 4.218/2022 (Anexo III sobre escadas alterado por Portarias posteriores, inclusive em 2025/2026).</p>
     <h4>35.1 Objetivo e campo de aplicação</h4>
     <p>Estabelece requisitos e medidas de prevenção para o trabalho em altura (planejamento, organização e execução). <b>Trabalho em altura</b> é toda atividade executada acima de <b>2,00 m (dois metros)</b> do nível inferior, onde haja risco de queda. Complementa-se com normas técnicas oficiais e, na ausência, normas internacionais aplicáveis.</p>
@@ -762,7 +762,7 @@ const topics = [
       <li>Alterações recentes (2025/2026) mexeram no Anexo III (Escadas de Uso Individual) e passaram a exigir que os treinamentos da NR-35 sejam <b>presenciais</b>.</li>
     </ul>
   `},
-  {id:"riscos", n:"16", title:"Identificação e Análise de Riscos (APR, AST, HAZOP, What-If)", ready:true, body:`
+  {id:"riscos", n:"16", title:"Identificação e Análise de Riscos (APR, AST, HAZOP, What-If)", ready:true, pages:2, body:`
     <h4>APR — Análise Preliminar de Riscos</h4>
     <p>Técnica qualitativa, aplicada preferencialmente na fase de projeto ou antes do início de uma atividade/obra nova, para identificar de forma ampla os perigos e riscos envolvidos, suas causas e consequências, e sugerir medidas de controle. É "preliminar" porque não substitui análises mais aprofundadas quando o risco identificado for complexo.</p>
     <h4>AST — Análise de Segurança do Trabalho (ou APT — Análise Preliminar de Tarefa)</h4>
@@ -774,7 +774,7 @@ const topics = [
     <h4>Matriz de risco</h4>
     <p>Ferramenta que cruza <b>probabilidade</b> (ou frequência) x <b>severidade</b> (gravidade da consequência) para classificar o nível de risco (ex.: baixo, médio, alto, crítico) e priorizar as ações de controle. É amplamente usada para consolidar o Inventário de Riscos do PGR (NR-01).</p>
   `},
-  {id:"higiene", n:"17", title:"Higiene Ocupacional (agentes físicos, químicos, biológicos)", ready:true, body:`
+  {id:"higiene", n:"17", title:"Higiene Ocupacional (agentes físicos, químicos, biológicos)", ready:true, pages:2, body:`
     <h4>Objetivo da Higiene Ocupacional</h4>
     <p>Antecipar, reconhecer, avaliar e controlar os riscos ambientais presentes ou originados no ambiente de trabalho, que possam colocar em risco a saúde e o bem-estar dos trabalhadores. É a disciplina técnica por trás da NR-09.</p>
     <h4>Agentes físicos</h4>
@@ -786,7 +786,7 @@ const topics = [
     <h4>Regime de trabalho e Limite de Tolerância</h4>
     <p><b>Limite de Tolerância (LT):</b> concentração ou intensidade máxima relacionada à natureza e ao tempo de exposição, que não causará dano à saúde do trabalhador durante sua vida laboral. Os limites de tolerância brasileiros estão na NR-15 (para fins de caracterização de insalubridade) — o reconhecimento internacional mais usado como referência técnica é o TLV (Threshold Limit Value) da ACGIH.</p>
   `},
-  {id:"doencas", n:"18", title:"Doenças Ocupacionais", ready:true, body:`
+  {id:"doencas", n:"18", title:"Doenças Ocupacionais", ready:true, pages:1, body:`
     <h4>Classificação legal (Lei nº 8.213/1991, art. 20)</h4>
     <ul>
       <li><b>Doença profissional (ou tecnopatia):</b> produzida ou desencadeada pelo exercício de determinada atividade, constante de relação elaborada pelo Ministério do Trabalho e da Previdência Social — o nexo causal é presumido pela própria atividade (ex.: silicose em mineradores).</li>
@@ -803,7 +803,7 @@ const topics = [
       <li><b>Transtornos mentais relacionados ao trabalho:</b> ganharam mais peso normativo com a inclusão dos riscos psicossociais na NR-01 (2024/2025).</li>
     </ul>
   `},
-  {id:"acidentes", n:"19", title:"Acidentes de Trabalho", ready:true, body:`
+  {id:"acidentes", n:"19", title:"Acidentes de Trabalho", ready:true, pages:2, body:`
     <h4>Conceito legal (Lei nº 8.213/1991, art. 19)</h4>
     <p>É o que ocorre pelo exercício do trabalho a serviço da empresa, provocando lesão corporal ou perturbação funcional que cause morte, perda ou redução, permanente ou temporária, da capacidade para o trabalho.</p>
     <h4>Equiparados a acidente de trabalho (art. 21)</h4>
@@ -818,7 +818,7 @@ const topics = [
       <li><b>Taxa de gravidade:</b> nº de dias perdidos/debitados × 1.000.000 ÷ horas-homem de exposição ao risco.</li>
     </ul>
   `},
-  {id:"incendio", n:"20", title:"Combate a Incêndio", ready:true, body:`
+  {id:"incendio", n:"20", title:"Combate a Incêndio", ready:true, pages:2, body:`
     <h4>Triângulo/Tetraedro do fogo</h4>
     <p>O fogo precisa de: <b>combustível</b> + <b>comburente</b> (oxigênio) + <b>calor</b> (fonte de ignição) — e, na visão mais completa (tetraedro), também da <b>reação em cadeia</b>. Extinguir o fogo é remover pelo menos um desses elementos: <b>abafamento</b> (remove o comburente), <b>resfriamento</b> (remove o calor), <b>isolamento</b> (remove o combustível) ou <b>quebra da reação em cadeia</b> (agentes químicos, como o pó químico seco).</p>
     <h4>Classes de incêndio (ABNT NBR 12693 / NR-23)</h4>
@@ -834,7 +834,7 @@ const topics = [
     <h4>Sistemas fixos de combate a incêndio</h4>
     <p>Sprinklers (chuveiros automáticos, geralmente classe A), sistemas de espuma para tanques de combustível, sistemas de CO₂/gases limpos para salas de servidores/elétrica, e hidrantes/mangotinhos para brigadas de incêndio industriais — muito relevantes em refinarias e terminais (Transpetro).</p>
   `},
-  {id:"emergencia", n:"21", title:"Plano de Emergência", ready:true, body:`
+  {id:"emergencia", n:"21", title:"Plano de Emergência", ready:true, pages:2, body:`
     <h4>Estrutura básica de um Plano de Emergência</h4>
     <p>Deve conter, no mínimo: identificação dos cenários de emergência possíveis (incêndio, explosão, vazamento, acidente com produto perigoso, emergência médica); organização e responsabilidades (quem faz o quê); recursos disponíveis (equipes, equipamentos, meios de comunicação); procedimentos de resposta para cada cenário; rotas de fuga e pontos de encontro; e procedimentos de comunicação com órgãos externos (Corpo de Bombeiros, Defesa Civil, órgãos ambientais).</p>
     <h4>Brigada de emergência</h4>
@@ -844,7 +844,7 @@ const topics = [
     <h4>Gestão de crises</h4>
     <p>Vai além da resposta operacional imediata: envolve a continuidade do negócio, a comunicação institucional (inclusive com a imprensa/comunidade, relevante em instalações industriais de grande porte como refinarias e terminais), e a investigação pós-evento para evitar recorrência — conectando-se com a investigação de acidentes (árvore de causas).</p>
   `},
-  {id:"sinalizacao", n:"22", title:"Sinalização de Segurança", ready:true, body:`
+  {id:"sinalizacao", n:"22", title:"Sinalização de Segurança", ready:true, pages:2, body:`
     <p>Base legal: NR-26, redação atual dada pela Portaria MTP nº 2.770/2022 — a norma foi bastante simplificada nessa atualização.</p>
     <h4>26.1 Objetivo / 26.2 Campo de aplicação</h4>
     <p>Estabelece medidas quanto à sinalização e identificação de segurança nos locais de trabalho. Aplica-se a todos os estabelecimentos/locais de trabalho.</p>
@@ -854,7 +854,7 @@ const topics = [
     <h4>26.4 Identificação de produto químico</h4>
     <p>O produto químico usado no local de trabalho deve ser classificado quanto aos perigos à segurança e à saúde conforme o <b>GHS — Sistema Globalmente Harmonizado de Classificação e Rotulagem de Produtos Químicos</b> (ONU), com rotulagem preventiva e Ficha de Dados de Segurança (FDS/FISPQ) disponível.</p>
   `},
-  {id:"gestao", n:"23", title:"Gestão de Segurança", ready:true, body:`
+  {id:"gestao", n:"23", title:"Gestão de Segurança", ready:true, pages:2, body:`
     <h4>Indicadores de SST</h4>
     <p>Além das taxas de frequência e gravidade (vistas em Acidentes de Trabalho), a gestão moderna de segurança usa dois grandes grupos de indicadores:</p>
     <ul>
@@ -868,7 +868,7 @@ const topics = [
     <h4>Ciclo PDCA e melhoria contínua</h4>
     <p>A ISO 45001 estrutura a gestão de SST no ciclo <b>Plan-Do-Check-Act</b>: planejar (identificar riscos e definir objetivos), fazer (implementar controles), checar (monitorar e medir desempenho, auditorias) e agir (ações corretivas, análise crítica pela direção, melhoria contínua).</p>
   `},
-  {id:"processos", n:"24", title:"Segurança de Processos", ready:true, body:`
+  {id:"processos", n:"24", title:"Segurança de Processos", ready:true, pages:2, body:`
     <h4>O que é Segurança de Processos (Process Safety)</h4>
     <p>Disciplina focada em prevenir a liberação não controlada de energia ou substâncias perigosas em processos industriais de grande escala (refinarias, plantas químicas/petroquímicas) — diferente da "segurança ocupacional" tradicional (que foca em lesões individuais), a segurança de processos foca em <b>eventos catastróficos</b> (explosões, grandes vazamentos, incêndios de grande porte) que podem afetar múltiplas pessoas, o meio ambiente e a continuidade operacional.</p>
     <h4>Modelo de Barreiras / Bowtie</h4>
@@ -878,7 +878,7 @@ const topics = [
     <h4>Integridade operacional</h4>
     <p>Conjunto de práticas de gestão (inspeção, manutenção, gestão de mudanças — MOC, gestão de riscos, capacitação) para garantir que instalações e equipamentos continuem operando dentro dos parâmetros de projeto e segurança ao longo de todo o seu ciclo de vida — é um conceito-chave em empresas como Petrobras e Transpetro, muito ligado às NR-13 (caldeiras/vasos), NR-20 (inflamáveis) e à gestão de ativos industriais.</p>
   `},
-  {id:"refinarias", n:"25", title:"Segurança em Refinarias e Plantas Petroquímicas", ready:true, body:`
+  {id:"refinarias", n:"25", title:"Segurança em Refinarias e Plantas Petroquímicas", ready:true, pages:2, body:`
     <h4>Operações críticas</h4>
     <p>Refinarias trabalham com grandes volumes de hidrocarbonetos inflamáveis, altas temperaturas e pressões (destilação, craqueamento catalítico, reforma), o que as classifica como <b>Classe III</b> na NR-20 — o mais alto grau de risco. Áreas de processo são tipicamente <b>áreas classificadas</b> (risco de atmosfera explosiva), exigindo equipamentos elétricos e instrumentação certificados (à prova de explosão) e controle rígido de fontes de ignição.</p>
     <h4>Paradas de manutenção (Turnaround / Parada Geral)</h4>
@@ -888,7 +888,7 @@ const topics = [
     <h4>Energia perigosa e isolamento (LOTO)</h4>
     <p><b>LOTO (Lockout/Tagout)</b> — bloqueio e etiquetagem — é o procedimento de isolar fisicamente todas as fontes de energia perigosa (elétrica, hidráulica, pneumática, térmica, gravitacional, armazenada) antes de uma intervenção, com bloqueio físico (cadeado) e etiqueta de identificação do responsável — é o mesmo princípio já visto na NR-12 (item 12.11) e na NR-10 (desenergização), mas em escala e criticidade muito maiores numa refinaria.</p>
   `},
-  {id:"avancado", n:"26", title:"Tópicos Avançados para Concursos Petrobras", ready:true, body:`
+  {id:"avancado", n:"26", title:"Tópicos Avançados para Concursos Petrobras", ready:true, pages:2, body:`
     <h4>Cultura de segurança</h4>
     <p>Modelo mais cobrado: a <b>Curva de Bradley (DuPont)</b>, que descreve a evolução da cultura de segurança de uma organização em estágios: <b>Reativa</b> (segurança por instinto, culpa em acidentes, reage depois que acontece) → <b>Dependente</b> (segurança gerenciada por regras e supervisão, "obedecer para não ser punido") → <b>Independente</b> (o trabalhador internaliza a segurança como valor pessoal, cuida de si mesmo) → <b>Interdependente</b> (estágio mais maduro: a equipe cuida uns dos outros, existe ajuda mútua e reporte espontâneo de riscos e quase-acidentes).</p>
     <h4>Segurança comportamental (BBS — Behavior-Based Safety)</h4>
@@ -900,7 +900,7 @@ const topics = [
     <h4>Continuidade operacional</h4>
     <p>Conceito que conecta segurança do trabalho, segurança de processos e gestão de risco corporativo: falhas de segurança não geram só lesões, mas também paradas não planejadas, danos a equipamentos e perdas financeiras — por isso a "finalidade da ênfase" no edital cita explicitamente a continuidade operacional das instalações como um dos objetivos do cargo.</p>
   `},
-  {id:"matematica", n:"27", title:"Matemática Básica", ready:true, body:`
+  {id:"matematica", n:"27", title:"Matemática Básica", ready:true, pages:2, body:`
     <p>Frentes mais cobradas em provas de nível técnico: razão e proporção, regra de três (simples e composta), porcentagem, juros simples, e interpretação de gráficos/tabelas. Não achei apostila específica de matemática nas suas mensagens ainda — o conteúdo abaixo é uma base geral, e as questões já estão no jogo pra você praticar.</p>
     <h4>Regra de três simples</h4>
     <p>Usada quando duas grandezas são diretamente ou inversamente proporcionais. Diretamente: aumenta uma, aumenta a outra na mesma razão. Inversamente: aumenta uma, diminui a outra na mesma razão (ex.: mais operários, menos tempo pra concluir uma obra).</p>
@@ -909,7 +909,7 @@ const topics = [
     <h4>Juros simples</h4>
     <p>J = C · i · t (Capital × taxa × tempo, na mesma unidade de tempo da taxa).</p>
   `},
-  {id:"portugues", n:"28", title:"Língua Portuguesa", ready:true, body:`
+  {id:"portugues", n:"28", title:"Língua Portuguesa", ready:true, pages:2, body:`
     <p>Frentes mais cobradas: interpretação de texto, concordância verbal e nominal, regência, crase, coesão e coerência, e classes de palavras/funções sintáticas. Também sem apostila específica ainda — base geral + questões de treino já no jogo.</p>
     <h4>Crase</h4>
     <p>Ocorre na fusão da preposição "a" com o artigo feminino "a(s)". Regra prática: se for possível substituir a palavra feminina por uma masculina equivalente e aparecer "ao", há crase (ex.: "Fui à reunião" → "Fui ao encontro" → crase confirmada).</p>
@@ -1258,13 +1258,23 @@ function saveReadCounts(){ localStorage.setItem('transpetro_reads', JSON.stringi
 const CHARS_PER_A4_PAGE = 3000; // média de caracteres por página A4 de texto corrido
 function stripHtml(html){ return (html||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(); }
 function estimatePages(topic){
-  if(!topic || !topic.body) return 0;
-  return Math.max(1, Math.round(stripHtml(topic.body).length / CHARS_PER_A4_PAGE));
+  if(!topic) return 0;
+  if(typeof topic.pages === 'number') return topic.pages; // valor fixo definido no tópico (preferido — estável)
+  if(!topic.body) return 0;
+  return Math.max(1, Math.round(stripHtml(topic.body).length / CHARS_PER_A4_PAGE)); // fallback só p/ tópicos sem valor fixo ainda
 }
 
 /* ---------- LOG DIÁRIO DE REVISÕES (pra desempenho diário/semanal/anual) ---------- */
-const reviewLog = JSON.parse(localStorage.getItem('transpetro_reviewlog') || '{}'); // {"YYYY-MM-DD":{reads:N,pages:N}}
+let reviewLog = JSON.parse(localStorage.getItem('transpetro_reviewlog') || '{}'); // {"YYYY-MM-DD":{reads:N,pages:N}}
 function saveReviewLog(){ localStorage.setItem('transpetro_reviewlog', JSON.stringify(reviewLog)); }
+// Migração única: o histórico antigo de páginas foi calculado por um método com bug (tamanho do
+// texto, mudava a cada atualização do app). A partir desta versão as páginas são fixas por tópico,
+// então o histórico de dias passados não é mais confiável e é zerado uma única vez.
+if(!localStorage.getItem('transpetro_pagefix_v1')){
+  reviewLog = {};
+  saveReviewLog();
+  localStorage.setItem('transpetro_pagefix_v1', '1');
+}
 function todayKey(){ return new Date().toISOString().slice(0,10); }
 function logReview(topicId, delta){
   const key = todayKey();
@@ -1402,6 +1412,7 @@ function renderCountdownHTML(){
   const daysLeft = nextExam ? Math.max(0, daysUntil(nextExam.date)) : null;
   const perDay = (unread.length && daysLeft) ? Math.ceil(unread.length/daysLeft) : 0;
   return `
+    <div class="widget-title">🗓️ Contagem regressiva até a prova</div>
     ${examList.length ? `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">
       ${[...examList].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(e=>`
         <div style="text-align:center;min-width:90px">
@@ -1498,6 +1509,7 @@ function renderExercisesHTML(){
     return {label:s.label, attempts:att, pct: att ? Math.round(100*cor/att) : null};
   }).filter(s=>s.attempts>0);
   return `
+    <div class="widget-title">📝 Exercícios — acerto e treino por matéria</div>
     <p class="muted" style="margin:0 0 10px;font-size:.78rem">Exercícios respondidos: <b style="color:var(--text)">${totalAttempts}</b></p>
     ${totalAttempts ? `
     <div class="row" style="align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:6px">
@@ -1506,7 +1518,7 @@ function renderExercisesHTML(){
     </div>
     <p class="muted" style="font-size:.65rem;margin:0 0 12px">Vermelho = precisa reforçar · verde = já está bem treinado</p>
     ` : `<p class="muted" style="font-size:.8rem;margin-bottom:10px">Nenhum exercício respondido ainda — comece pela aba 🎮 Exercícios.</p>`}
-    ${bySubjectAttempts.some(s=>s.value>0) ? bySubjectAttempts.map(s=>barRow(s.label, s.value, maxSubj)).join('') : ''}
+    ${bySubjectAttempts.some(s=>s.value>0) ? `<p class="muted" style="margin:4px 0 8px;font-size:.72rem">Questões respondidas por matéria:</p>` + bySubjectAttempts.map(s=>barRow(s.label, s.value, maxSubj)).join('') : ''}
     <div class="row" style="margin-top:12px;gap:10px">
       ${mostTrained ? `<div class="stat" style="flex:1;min-width:130px"><b style="font-size:1rem">${idToTitle(mostTrained[0])}</b><span>mais treinado (${mostTrained[1].attempts}x)</span></div>` : ''}
       ${weakest ? `<div class="stat" style="flex:1;min-width:130px;border-color:var(--hard)"><b style="font-size:1rem;color:var(--hard)">${idToTitle(weakest[0])}</b><span>ponto mais fraco (${Math.round(100*weakest[1].correct/weakest[1].attempts)}% de acerto)</span></div>` : `<div class="stat muted" style="flex:1;min-width:130px;font-size:.72rem">Responda pelo menos 3 questões de um tópico pra aparecer aqui o seu ponto mais fraco</div>`}
