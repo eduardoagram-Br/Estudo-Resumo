@@ -90,8 +90,10 @@
   .opt{display:block;width:100%;text-align:left;background:var(--bg2);border:1px solid var(--border);
     color:var(--text);padding:12px 14px;border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:.93rem}
   .opt:hover{border-color:var(--accent)}
+  .opt.selected{border-color:var(--accent);background:rgba(45,212,191,.14)}
   .opt.correct{background:rgba(34,197,94,.18);border-color:var(--easy)}
   .opt.wrong{background:rgba(239,68,68,.18);border-color:var(--hard)}
+  #confirmBtn:disabled{opacity:.4;cursor:not-allowed}
   .opt[disabled]{cursor:default}
   .explain{margin-top:10px;background:var(--bg2);border-left:3px solid var(--accent);padding:10px 12px;
     border-radius:6px;font-size:.85rem;color:#cfe0ea;display:none}
@@ -281,12 +283,16 @@
     </div>
 
     <div class="card" id="quizCard" style="display:none">
-      <div class="q-progress" id="qProgress"></div>
+      <div class="row" style="justify-content:space-between;margin-bottom:0">
+        <div class="q-progress" id="qProgress"></div>
+        <div class="muted" style="font-size:.85rem" id="qTimer">⏱️ 00:00</div>
+      </div>
       <div id="qDifficulty"></div>
       <div class="q-text" id="qText"></div>
       <div id="qOptions"></div>
       <div class="explain" id="qExplain"></div>
       <div class="footer-nav">
+        <button class="primary" id="confirmBtn" style="display:none" onclick="confirmAnswer()" disabled>Confirmar resposta</button>
         <button class="primary" id="nextBtn" style="display:none" onclick="nextQuestion()">Próxima →</button>
       </div>
     </div>
@@ -297,6 +303,8 @@
       <p id="resultDetail" class="muted"></p>
       <button class="primary" onclick="resetQuiz()">Fazer outro simulado</button>
     </div>
+
+    <div class="card" id="examHistoryCard"></div>
   </section>
 
   <!-- SEGURANÇA DO TRABALHO (Transpetro) -->
@@ -1852,6 +1860,57 @@ let quiz = [];
 let qIndex = 0;
 let quizCorrect = 0;
 let answeredCurrent = false;
+let selectedOption = null;
+let quizStartTime = null;
+let quizMode = '';
+let quizTimerInterval = null;
+
+/* ---------- CONTADOR DIÁRIO DE QUESTÕES (igual ao de páginas) ---------- */
+const questionLog = JSON.parse(localStorage.getItem('transpetro_questionlog') || '{}'); // {"YYYY-MM-DD": N}
+function saveQuestionLog(){ localStorage.setItem('transpetro_questionlog', JSON.stringify(questionLog)); }
+function logQuestionAnswered(){
+  const key = todayKey();
+  questionLog[key] = (questionLog[key]||0) + 1;
+  saveQuestionLog();
+}
+
+/* ---------- HISTÓRICO DE PROVAS (nota, tempo, modo — separado da média geral) ---------- */
+const examHistory = JSON.parse(localStorage.getItem('transpetro_examhistory') || '[]');
+function saveExamHistory(){ localStorage.setItem('transpetro_examhistory', JSON.stringify(examHistory)); }
+function formatTime(totalSeconds){
+  const m = Math.floor(totalSeconds/60), s = totalSeconds%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function startQuizTimer(){
+  quizStartTime = Date.now();
+  if(quizTimerInterval) clearInterval(quizTimerInterval);
+  quizTimerInterval = setInterval(()=>{
+    const el = document.getElementById('qTimer');
+    if(el) el.textContent = '⏱️ ' + formatTime(Math.floor((Date.now()-quizStartTime)/1000));
+  }, 1000);
+}
+function stopQuizTimer(){
+  if(quizTimerInterval){ clearInterval(quizTimerInterval); quizTimerInterval = null; }
+  return quizStartTime ? Math.floor((Date.now()-quizStartTime)/1000) : 0;
+}
+function renderExamHistoryHTML(){
+  const el = document.getElementById('examHistoryCard');
+  if(!el) return;
+  const recent = [...examHistory].reverse().slice(0,10);
+  el.innerHTML = `<div class="widget-title">🗒️ Minhas provas feitas (notas e tempo separados, cada prova é independente)</div>` +
+    (recent.length ? recent.map(e=>`
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:8px;border-bottom:1px dashed var(--border)">
+        <div>
+          <b>${e.label}</b><br>
+          <span class="muted" style="font-size:.72rem">${e.date} · ${e.total} questões · ⏱️ ${formatTime(e.timeSeconds)}</span>
+        </div>
+        <div style="text-align:right">
+          <b style="font-size:1.1rem;color:${e.pct>=70?'var(--easy)':e.pct>=40?'var(--medium)':'var(--hard)'}">${e.pct}%</b><br>
+          <span class="muted" style="font-size:.7rem">${e.correct}/${e.total} nota</span>
+        </div>
+      </div>
+    `).join('') : `<p class="muted" style="font-size:.85rem">Nenhuma prova concluída ainda.</p>`);
+}
 
 function pickProportional(pool, n){
   const byDiff = {easy:[], medium:[], hard:[]};
@@ -1875,6 +1934,8 @@ function startQuiz(){
   const pool = topicVal==='all' ? questions : questions.filter(q=>q.topic===topicVal);
   quiz = pickProportional(pool, Math.min(n, pool.length));
   qIndex = 0; quizCorrect = 0;
+  quizMode = 'Simulado rápido — ' + (topicVal==='all' ? 'todos os tópicos' : topicVal);
+  startQuizTimer();
   document.getElementById('setupCard').style.display='none';
   document.getElementById('fullExamCard').style.display='none';
   document.getElementById('resultCard').style.display='none';
@@ -1898,6 +1959,8 @@ function startFullExam(){
   const spec = pickFixed(specPool, 17, 17, 16); // 50
   quiz = [...port, ...math, ...spec]; // ordem: Português, Matemática, Específicas — igual à estrutura real
   qIndex = 0; quizCorrect = 0;
+  quizMode = '🏆 Simulado Completo (70 questões)';
+  startQuizTimer();
   document.getElementById('setupCard').style.display='none';
   document.getElementById('fullExamCard').style.display='none';
   document.getElementById('customExamCard').style.display='none';
@@ -1997,6 +2060,8 @@ function startCustomExam(){
     return;
   }
   qIndex = 0; quizCorrect = 0;
+  quizMode = '🧩 Prova personalizada';
+  startQuizTimer();
   document.getElementById('setupCard').style.display='none';
   document.getElementById('fullExamCard').style.display='none';
   document.getElementById('customExamCard').style.display='none';
@@ -2007,6 +2072,7 @@ function startCustomExam(){
 
 function renderQuestion(){
   answeredCurrent = false;
+  selectedOption = null;
   const q = quiz[qIndex];
   document.getElementById('qProgress').textContent = `Questão ${qIndex+1} de ${quiz.length}`;
   document.getElementById('qDifficulty').innerHTML = `<span class="pill ${q.diff}">${q.diff==='easy'?'Fácil':q.diff==='medium'?'Médio':'Difícil'}</span>`;
@@ -2015,12 +2081,29 @@ function renderQuestion(){
   q.opts.forEach((optText,i)=>{
     const b = document.createElement('button');
     b.className='opt'; b.textContent=optText;
-    b.onclick = ()=>answer(i);
+    b.onclick = ()=>selectOption(i);
     optsEl.appendChild(b);
   });
   document.getElementById('qExplain').classList.remove('show');
   document.getElementById('qExplain').textContent='';
   document.getElementById('nextBtn').style.display='none';
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.style.display='inline-block';
+  confirmBtn.disabled = true;
+}
+
+function selectOption(i){
+  if(answeredCurrent) return;
+  selectedOption = i;
+  document.querySelectorAll('#qOptions .opt').forEach((b,idx)=>{
+    b.classList.toggle('selected', idx===i);
+  });
+  document.getElementById('confirmBtn').disabled = false;
+}
+
+function confirmAnswer(){
+  if(selectedOption===null || answeredCurrent) return;
+  answer(selectedOption);
 }
 
 const topicStats = JSON.parse(localStorage.getItem('transpetro_topicstats') || '{}');
@@ -2035,15 +2118,18 @@ function recordTopicAnswer(topicId, correct){
 function answer(i){
   if(answeredCurrent) return;
   answeredCurrent = true;
+  document.getElementById('confirmBtn').style.display='none';
   const q = quiz[qIndex];
   const buttons = document.querySelectorAll('#qOptions .opt');
   buttons.forEach((b,idx)=>{
     b.disabled = true;
+    b.classList.remove('selected');
     if(idx===q.correct) b.classList.add('correct');
     else if(idx===i) b.classList.add('wrong');
   });
   const isCorrect = i===q.correct;
   state.totalAnswered++;
+  logQuestionAnswered();
   recordTopicAnswer(q.topic, isCorrect);
   if(isCorrect){
     quizCorrect++;
