@@ -244,12 +244,7 @@
         </div>
         <div>
           <label class="muted" style="display:block;margin-bottom:4px">Nº de questões</label>
-          <select id="qtySelect">
-            <option value="6">6</option>
-            <option value="9" selected>9</option>
-            <option value="12">12</option>
-            <option value="15">15</option>
-          </select>
+          <input type="number" id="qtySelect" min="3" value="9" style="width:80px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px;font-size:.95rem">
         </div>
       </div>
       <p class="muted">O simulado sempre puxa <b>1/3 fácil, 1/3 médio, 1/3 difícil</b> — a mesma proporção da prova real.</p>
@@ -285,7 +280,10 @@
     <div class="card" id="quizCard" style="display:none">
       <div class="row" style="justify-content:space-between;margin-bottom:0">
         <div class="q-progress" id="qProgress"></div>
-        <div class="muted" style="font-size:.85rem" id="qTimer">⏱️ 00:00</div>
+        <div class="row" style="gap:8px;margin-bottom:0;align-items:center">
+          <span class="muted" style="font-size:.85rem" id="qTimer">⏱️ 00:00</span>
+          <button class="microbtn" id="pauseBtn" style="border:1px solid var(--border);border-radius:4px;padding:2px 8px" onclick="toggleTimerPause()">⏸️ Pausar</button>
+        </div>
       </div>
       <div id="qDifficulty"></div>
       <div class="q-text" id="qText"></div>
@@ -969,26 +967,98 @@ const topics = [
 ];
 
 const matematicaTopics = [
-  {id:"matematica", n:"01", title:"Matemática Básica", ready:true, pages:2, body:`
-    <p>Frentes mais cobradas em provas de nível técnico: razão e proporção, regra de três (simples e composta), porcentagem, juros simples, e interpretação de gráficos/tabelas.</p>
+  {id:"matematica", n:"01", title:"Razão, Proporção, Regra de Três e Porcentagem", ready:true, pages:2, body:`
+    <p>Base do programa Cesgranrio de Matemática pra nível médio/técnico — é o bloco que mais aparece em prova.</p>
+    <h4>Razão e proporção</h4>
+    <p>Razão é a comparação entre duas grandezas (a/b). Proporção é a igualdade entre duas razões (a/b = c/d) — propriedade fundamental: produto dos meios = produto dos extremos (a·d = b·c).</p>
+    <h4>Grandezas diretamente e inversamente proporcionais</h4>
+    <p><b>Diretamente proporcionais:</b> aumenta uma, aumenta a outra na mesma razão (ex.: mais horas trabalhadas, mais peças produzidas). <b>Inversamente proporcionais:</b> aumenta uma, diminui a outra na mesma razão (ex.: mais técnicos numa tarefa, menos tempo pra terminar).</p>
     <h4>Regra de três simples</h4>
-    <p>Usada quando duas grandezas são diretamente ou inversamente proporcionais. Diretamente: aumenta uma, aumenta a outra na mesma razão. Inversamente: aumenta uma, diminui a outra na mesma razão (ex.: mais operários, menos tempo pra concluir uma obra).</p>
+    <p>Usada com duas grandezas. Monta-se a proporção mantendo a correspondência direta (multiplica em cruz) ou invertendo uma das colunas quando a relação é inversa.</p>
+    <h4>Regra de três composta</h4>
+    <p>Usada com três ou mais grandezas relacionadas simultaneamente (ex.: nº de técnicos, horas de trabalho e nº de fichas preenchidas). Analisa-se cada grandeza em relação à grandeza-alvo (direta ou inversa) e multiplicam-se as razões correspondentes.</p>
     <h4>Porcentagem</h4>
-    <p>Calcular x% de um valor V é o mesmo que multiplicar V por (x/100). Aumento/desconto sucessivo não se soma direto — cada percentual incide sobre o valor já alterado pelo anterior.</p>
+    <p>x% de um valor V = V × (x/100). Aumento/desconto sucessivo não se soma direto — cada percentual incide sobre o valor já alterado pelo anterior (ex.: dois aumentos de 10% não dão 20%, e sim 21%).</p>
+  `},
+  {id:"mat-juros-eq", n:"02", title:"Juros Simples, Equações e Sistemas", ready:true, pages:1, body:`
     <h4>Juros simples</h4>
-    <p>J = C · i · t (Capital × taxa × tempo, na mesma unidade de tempo da taxa).</p>
+    <p>J = C · i · t (Capital × taxa × tempo, na mesma unidade de tempo da taxa). Montante M = C + J.</p>
+    <h4>Equação do 1º grau</h4>
+    <p>Forma ax + b = 0, com a≠0. Resolve-se isolando x: x = -b/a.</p>
+    <h4>Equação do 2º grau</h4>
+    <p>Forma ax² + bx + c = 0. Resolve-se pela fórmula de Bhaskara: x = (-b ± √(b²-4ac)) / 2a. O termo Δ = b²-4ac (discriminante) indica: Δ&gt;0 → duas raízes reais distintas; Δ=0 → uma raiz real (dupla); Δ&lt;0 → nenhuma raiz real.</p>
+    <h4>Sistema de equações do 1º grau</h4>
+    <p>Duas (ou mais) equações com duas (ou mais) incógnitas, resolvidas por substituição (isola uma variável numa equação e substitui na outra) ou por adição (soma/subtrai as equações pra eliminar uma variável).</p>
+  `},
+  {id:"mat-estatistica", n:"03", title:"Média, Desvio-Padrão e Gráficos", ready:true, pages:1, body:`
+    <h4>Média aritmética simples</h4>
+    <p>Soma de todos os valores dividida pela quantidade de valores.</p>
+    <h4>Média ponderada</h4>
+    <p>Cada valor multiplicado pelo seu peso, somados, e divididos pela soma dos pesos.</p>
+    <h4>Desvio-padrão e variância (noções básicas)</h4>
+    <p>Medem o quanto os valores de um conjunto se afastam da média. Quando todos os valores são iguais entre si, o desvio-padrão e a variância são <b>zero</b> (não há dispersão). Quanto mais espalhados os valores em torno da média, maior o desvio-padrão.</p>
+    <h4>Leitura e interpretação de tabelas e gráficos</h4>
+    <p>Habilidade de extrair informação direta (valores, totais, variações percentuais entre colunas/barras) sem fórmula complexa — a banca costuma testar atenção na leitura mais do que cálculo elaborado aqui.</p>
+  `},
+  {id:"mat-geo-prob", n:"04", title:"Geometria, Análise Combinatória e Probabilidade", ready:true, pages:1, body:`
+    <h4>Geometria básica</h4>
+    <p>Área do retângulo = base × altura. Área do quadrado = lado². Área do triângulo = (base × altura)/2. Perímetro = soma dos lados.</p>
+    <h4>Teorema de Pitágoras</h4>
+    <p>Em todo triângulo retângulo: hipotenusa² = cateto1² + cateto2². Muito cobrado em contexto de segurança (ex.: comprimento de escada apoiada em parede, cálculo de distâncias).</p>
+    <h4>Análise combinatória simples</h4>
+    <p>Conta o número de agrupamentos possíveis (arranjos, combinações) — em nível técnico, geralmente aparece em forma de princípio multiplicativo simples (nº de opções de A × nº de opções de B).</p>
+    <h4>Probabilidade básica</h4>
+    <p>P(evento) = (casos favoráveis) / (casos possíveis).</p>
+    <h4>Dose de ruído — NR-15 (aplicação de regra de três na sua área)</h4>
+    <p>A Cesgranrio costuma cobrar isso como questão de matemática, não só de segurança: some as frações de tempo exposto/tempo máximo permitido para cada nível de ruído (85 dB → 8h; 90 dB → 4h; 95 dB → 2h — cada +5dB divide o tempo permitido por 2). Se a soma das frações ultrapassar 1 (100%), a dose está acima do limite de tolerância.</p>
   `},
 ];
 
 const portuguesTopics = [
-  {id:"portugues", n:"01", title:"Língua Portuguesa", ready:true, pages:1, body:`
-    <p>Frentes mais cobradas: interpretação de texto, concordância verbal e nominal, regência, crase, coesão e coerência, e classes de palavras/funções sintáticas.</p>
+  {id:"portugues", n:"01", title:"Interpretação de Texto e Significação das Palavras", ready:true, pages:1, body:`
+    <h4>Compreensão e interpretação de textos</h4>
+    <p>A Cesgranrio cobra inferência (o que o texto permite concluir, sem estar dito literalmente), ambiguidade (quando uma frase permite mais de uma leitura — ex.: pronomes/orações que podem se referir a mais de um termo) e coerência entre as partes do texto.</p>
+    <h4>Tipologia textual e gêneros</h4>
+    <p>Tipos: narração, descrição, dissertação, injunção (instrução/ordem), exposição. Em prova técnica, os textos de apoio costumam ser dissertativos/expositivos ou normativos (trechos de manuais, normas).</p>
+    <h4>Significação das palavras</h4>
+    <ul>
+      <li><b>Sinônimos:</b> palavras com sentido semelhante (ex.: mitigar ≈ atenuar).</li>
+      <li><b>Antônimos:</b> sentido oposto (ex.: negligente × zeloso).</li>
+      <li><b>Homônimos:</b> mesma grafia/som, sentidos diferentes (ex.: "são" de saudável e "são" do verbo ser).</li>
+      <li><b>Parônimos:</b> grafia/som parecidos, sentidos diferentes (ex.: eminente × iminente; cessão × sessão × seção).</li>
+    </ul>
+  `},
+  {id:"port-gramatica1", n:"02", title:"Ortografia, Acentuação, Pontuação e Classes de Palavras", ready:true, pages:1, body:`
+    <h4>Ortografia e parônimos clássicos de prova</h4>
+    <p>Mal/mau (mal = advérbio/contrário de bem; mau = adjetivo/contrário de bom), por que/porque/por quê/porquê (pergunta separado; resposta junto; final de frase com acento; substantivo com artigo), a cerca de/acerca de/há cerca de (aproximadamente de tempo/distância vs "sobre" vs tempo passado), sessão/seção/cessão.</p>
+    <h4>Acentuação gráfica</h4>
+    <p>Regras básicas: oxítonas terminadas em a(s), e(s), o(s), em, ens são acentuadas; paroxítonas são acentuadas quando NÃO terminam nas terminações típicas (a, e, o, em, ens, seguidas ou não de s); proparoxítonas são sempre acentuadas.</p>
+    <h4>Pontuação</h4>
+    <p>Vírgula: separa aposto e oração explicativa (que pode ser retirada sem mudar o sentido essencial); NÃO se usa vírgula antes de oração restritiva (que não pode ser retirada sem mudar o sentido). Ex.: "Os trabalhadores que usam EPI estão seguros" (restritiva, sem vírgula — só os que usam) × "Os trabalhadores, que usam EPI, estão seguros" (explicativa, com vírgula — todos usam).</p>
+    <h4>Classes de palavras</h4>
+    <p>Substantivo (nomeia seres/coisas/conceitos), adjetivo (qualifica o substantivo), verbo (ação/estado), pronome, advérbio (modifica verbo/adjetivo/outro advérbio — geralmente indica modo, tempo, lugar, intensidade), preposição, conjunção.</p>
+  `},
+  {id:"port-sintaxe", n:"03", title:"Sintaxe, Concordância, Regência e Crase", ready:true, pages:2, body:`
+    <h4>Sintaxe — termos da oração</h4>
+    <p>Sujeito (quem pratica/sofre a ação), predicado (o que se diz do sujeito), objeto direto/indireto (completam o sentido do verbo, sem/com preposição), adjunto adnominal (caracteriza o substantivo, ex.: "norma <u>de segurança</u>"), complemento nominal (completa sentido de nome que pede preposição, ex.: "necessidade <u>de treinamento</u>"), aposto (explica/especifica um termo), vocativo (chama/invoca alguém).</p>
+    <h4>Concordância verbal</h4>
+    <p>Sujeito composto anteposto ao verbo → verbo no plural. "Haver" no sentido de existir é <b>impessoal</b> (fica sempre na 3ª pessoa do singular: "Há muitos riscos", nunca "Haviam muitos riscos"). "Fazer" indicando tempo decorrido também é impessoal ("Faz dois anos", não "Fazem dois anos"). Expressões como "a maioria de", "mais de um" geralmente concordam no singular com o núcleo mais próximo.</p>
+    <h4>Concordância nominal</h4>
+    <p>"É proibido"/"É necessário" ficam invariáveis quando o sujeito não vem determinado por artigo (ex.: "É proibido entrada"); concordam quando o sujeito é determinado (ex.: "É proibida a entrada").</p>
+    <h4>Regência verbal e nominal</h4>
+    <p>Alguns verbos mudam de sentido conforme a regência: "assistir" (ver = assistir AO jogo; morar = assistir EM); "visar" (pretender = visar A algo; mirar = visar algo, sem preposição); "implicar" (acarretar = sem preposição; envolver-se = implicar-SE em). "Preferir" pede "a", não "do que" (prefiro segurança A dinheiro).</p>
     <h4>Crase</h4>
-    <p>Ocorre na fusão da preposição "a" com o artigo feminino "a(s)". Regra prática: se for possível substituir a palavra feminina por uma masculina equivalente e aparecer "ao", há crase (ex.: "Fui à reunião" → "Fui ao encontro" → crase confirmada).</p>
-    <h4>Concordância verbal com sujeito composto</h4>
-    <p>Sujeito composto anteposto ao verbo: verbo no plural. Sujeito composto posposto: pode concordar no plural ou com o núcleo mais próximo, dependendo do caso.</p>
+    <p>Fusão da preposição "a" com o artigo feminino "a(s)". Regra prática: troque a palavra feminina por uma masculina equivalente — se aparecer "ao", há crase. Ex.: "Entregou o documento à chefia" → "Entregou o documento ao chefe" → crase confirmada. Não ocorre antes de verbo, nem geralmente antes de pronomes pessoais/palavras masculinas.</p>
+  `},
+  {id:"port-reescrita", n:"04", title:"Colocação Pronominal, Reescrita, Coesão e Coerência", ready:true, pages:1, body:`
+    <h4>Colocação pronominal</h4>
+    <p>Próclise (pronome antes do verbo): com palavras atrativas (negação, conjunção subordinativa, advérbio no início da frase, pronome relativo/indefinido). Ênclise (pronome depois do verbo): regra geral em início de frase e com verbo no imperativo afirmativo. Em concursos, evita-se iniciar frase com pronome oblíquo átono.</p>
+    <h4>Reescrita de frases — manutenção de sentido</h4>
+    <p>A banca troca conectivos por sinônimos equivalentes (ex.: "a fim de" → "para", mantendo ideia de finalidade) e cobra identificar quando o sentido muda (ex.: "embora" indica concessão, não pode ser trocado por "porque", que indica causa).</p>
     <h4>Coesão e coerência</h4>
-    <p>Coesão é a ligação gramatical entre as partes do texto (conectivos, pronomes, referências). Coerência é o sentido lógico do texto como um todo — um texto pode ser coeso e ainda assim incoerente.</p>
+    <p>Coesão é a ligação gramatical entre as partes do texto (conectivos, pronomes, repetição/substituição de termos). Coerência é o sentido lógico do texto como um todo — um texto pode ser coeso e, ainda assim, incoerente se as ideias se contradisserem.</p>
+    <h4>Vícios de linguagem e figuras de linguagem</h4>
+    <p>Vícios: ambiguidade, cacofonia, pleonasmo vicioso (redundância desnecessária), barbarismo. Figuras (usadas de forma proposital, não são erro): metáfora, comparação, hipérbole, eufemismo, ironia.</p>
   `},
 ];
 
@@ -1046,6 +1116,26 @@ const questions = [
   {topic:"matematica", diff:"medium", q:"Em um torneio de videogame, J disputou três partidas totalizando 2.660 pontos. Na segunda partida fez 410 pontos a mais que na primeira; na terceira, fez metade da segunda. O número de pontos feitos por J na primeira partida, dividido por 5, deixa resto igual a", opts:["4","3","2","1","0"], correct:1, exp:"Questão real (Cesgranrio/Transpetro 2023). Se a 1ª partida = a: a + (a+410) + (a+410)/2 = 2660 → a = 818. 818 ÷ 5 tem resto 3."},
   {topic:"matematica", diff:"easy", q:"O triângulo ABC é retângulo em A. A hipotenusa BC mede 20 cm e o cateto AB mede 12 cm. Qual é a área, em cm², do triângulo ABC?", opts:["16","48","60","96","240"], correct:3, exp:"Questão real (Cesgranrio/Transpetro 2023). Outro cateto: √(20²−12²) = √256 = 16. Área = (12×16)/2 = 96."},
   {topic:"matematica", diff:"medium", q:"Um consumidor comprou 1 kg de batata e 1 kg de cebola por R$ 11,00. No dia seguinte, comprou 3 kg de batata e 2 kg de cebola por R$ 28,00. No terceiro dia, comprou 2 kg de batata e 1 kg de cebola, com os mesmos preços. Quanto ele pagou no terceiro dia?", opts:["R$ 5","R$ 6","R$ 16","R$ 17","R$ 39"], correct:3, exp:"Questão real (Cesgranrio/Transpetro 2023). Do sistema p+c=11 e 3p+2c=28, obtém-se p=6 (batata) e c=5 (cebola). No 3º dia: 2×6+5 = 17."},
+
+  /* ===== QUESTÕES DE TREINO (não são de prova real — elaboradas a partir do material que você trouxe, conferidas por cálculo) ===== */
+  {topic:"matematica", diff:"easy", q:"Em uma base, um operador ficou exposto a 85 dB por 4h e 90 dB por 2h. Pela NR-15 (85dB→8h; 90dB→4h de tempo máximo), a dose de ruído é:", opts:["50%","75%","100%","125%","150%"], correct:2, exp:"Questão de treino. Dose = 4/8 + 2/4 = 0,5 + 0,5 = 1,0 = 100% (no limite)."},
+  {topic:"matematica", diff:"easy", q:"Em uma empresa com 1.200 funcionários, 35% trabalham em área de risco. Quantos funcionários isso representa?", opts:["380","420","480","540","600"], correct:1, exp:"Questão de treino. 1.200 × 0,35 = 420."},
+  {topic:"matematica", diff:"medium", q:"Em uma empresa com 800 funcionários, 12% não usam o EPI corretamente. Quantos usam corretamente?", opts:["96","600","688","704","800"], correct:2, exp:"Questão de treino. 88% de 800 = 704."},
+  {topic:"matematica", diff:"medium", q:"Um compressor enche um reservatório de 500 L em 4 horas, com vazão constante. Em quanto tempo ele encherá um reservatório de 750 L?", opts:["5h","5h30","6h","6h30","7h"], correct:2, exp:"Questão de treino (regra de três simples). 500/4 = 750/x → x = 6h."},
+  {topic:"matematica", diff:"easy", q:"A média de cinco medições de ruído — 80, 85, 90, 85 e 85 dB — é:", opts:["83","84","85","86","87"], correct:2, exp:"Questão de treino. (80+85+90+85+85)/5 = 425/5 = 85."},
+  {topic:"matematica", diff:"hard", q:"Três técnicos preenchem 60 fichas de EPI em 6 horas, todos no mesmo ritmo. Trabalhando no mesmo ritmo, quantas fichas 2 técnicos preenchem em 9 horas?", opts:["40","48","60","80","90"], correct:2, exp:"Questão de treino (regra de três composta). Ritmo por técnico: 60/(3×6) = 3,33 fichas/h. Com 2 técnicos em 9h: 2×9×3,33 = 60 fichas."},
+  {topic:"matematica", diff:"hard", q:"Dois técnicos analisam 40 fichas em 5 horas, no mesmo ritmo. Quantas fichas 4 técnicos, no mesmo ritmo, analisam em 3 horas?", opts:["32","40","48","60","80"], correct:2, exp:"Questão de treino (regra de três composta). Ritmo por técnico: 40/(2×5) = 4 fichas/h. Com 4 técnicos em 3h: 4×3×4 = 48 fichas."},
+  {topic:"matematica", diff:"medium", q:"Em uma turma de 60 estudantes, 20 tiraram nota 4 e 40 tiraram nota 6, em uma avaliação. A média da turma é:", opts:["4,5","5,0","5,33","5,5","6,0"], correct:2, exp:"Questão de treino (média ponderada). (20×4 + 40×6)/60 = (80+240)/60 = 320/60 ≈ 5,33."},
+
+  {topic:"portugues", diff:"easy", q:"\"O trabalhador, embora alertado, não usou o EPI.\" A ideia expressa por \"embora\" é de:", opts:["Causa","Concessão","Condição","Conclusão","Tempo"], correct:1, exp:"Questão de treino. \"Embora\" introduz oração subordinada adverbial concessiva (admite um fato que, mesmo assim, não impede o resultado)."},
+  {topic:"portugues", diff:"easy", q:"\"É preciso que todos colaborem.\" A oração destacada (\"que todos colaborem\") é classificada como:", opts:["Principal","Subordinada substantiva","Subordinada adjetiva","Subordinada adverbial","Coordenada"], correct:1, exp:"Questão de treino. A oração funciona como sujeito da oração principal (\"é preciso ISSO\"), caracterizando uma subordinada substantiva."},
+  {topic:"portugues", diff:"easy", q:"\"O relatório foi claro, porém incompleto.\" A conjunção \"porém\" indica relação de:", opts:["Adição","Oposição","Explicação","Conclusão","Alternância"], correct:1, exp:"Questão de treino. \"Porém\" é conjunção adversativa, indicando oposição/contraste entre as ideias."},
+  {topic:"portugues", diff:"medium", q:"\"Entregou o documento à chefia às 8 horas.\" As crases empregadas nessa frase estão:", opts:["Ambas corretas","Ambas incorretas","A primeira correta, a segunda incorreta","A primeira incorreta, a segunda correta","Depende do contexto"], correct:0, exp:"Questão de treino. \"À chefia\" (entregar A ALGUÉM + artigo \"a\" feminino) e \"às 8 horas\" (indicação de horário determinado) são usos corretos de crase."},
+  {topic:"portugues", diff:"medium", q:"\"Haja vista os acidentes registrados no mês.\" A forma \"haja vista\" está empregada de modo", opts:["Errado; o correto seria \"haja visto\"","Errado; o correto seria \"hajam vista\"","Correto; a expressão é invariável","Errado; o correto seria \"hajam vistas\"","Errado; o correto seria \"haja vistas\""], correct:2, exp:"Questão de treino. \"Haja vista\" é expressão consagrada e invariável, não concordando em número com o termo seguinte."},
+  {topic:"portugues", diff:"medium", q:"\"Vende-se EPIs na loja da empresa.\" Está em concordância com a norma-padrão a reescrita:", opts:["Vendem-se EPIs na loja da empresa.","Vende-se de EPIs na loja da empresa.","Vende-se EPI's na loja da empresa.","A frase original já está correta.","Vendesse EPIs na loja da empresa."], correct:0, exp:"Questão de treino. \"Se\" é partícula apassivadora quando o verbo é transitivo direto; o sujeito (\"EPIs\") determina a concordância do verbo: \"Vendem-se EPIs\"."},
+  {topic:"portugues", diff:"medium", q:"\"Prefiro segurança ___ dinheiro.\" A lacuna deve ser preenchida com:", opts:["do que","a","que","à","do que a"], correct:1, exp:"Questão de treino. O verbo \"preferir\" rege a preposição \"a\" (prefiro uma coisa A outra), não \"do que\"."},
+  {topic:"portugues", diff:"easy", q:"\"O técnico assistiu ___ acidente.\" No sentido de \"presenciar, ver\", a lacuna deve ser preenchida com:", opts:["o","ao","-o","lhe","à"], correct:1, exp:"Questão de treino. \"Assistir\" no sentido de \"ver\" é transitivo indireto, regendo a preposição \"a\": \"assistiu AO acidente\"."},
+  {topic:"portugues", diff:"medium", q:"\"O técnico alertou o operário, que estava sem capacete.\" A vírgula antes de \"que\" está correta porque introduz uma oração", opts:["restritiva, que não pode ser retirada da frase","explicativa, que pode ser retirada sem mudar o sentido essencial","coordenada aditiva","subordinada substantiva","reduzida de infinitivo"], correct:1, exp:"Questão de treino. Orações explicativas (acrescentam uma informação extra) vêm isoladas por vírgula; restritivas (limitam o sentido) não levam vírgula."},
 
   // Português — fáceis
   {topic:"portugues", diff:"easy", q:"Assinale a frase em que há crase corretamente empregada.", opts:["Ele foi à pé até o local.","Entreguei o relatório à ela.","Cheguei à empresa às 8 horas.","Refiro-me à você diretamente."], correct:2, exp:"\"À empresa\" e \"às 8 horas\" combinam preposição + artigo feminino corretamente; nos demais casos não cabe crase (pronome pessoal/ \"pé\" não é palavra feminina que aceite artigo)."},
@@ -1864,6 +1954,9 @@ let selectedOption = null;
 let quizStartTime = null;
 let quizMode = '';
 let quizTimerInterval = null;
+let quizPaused = false;
+let quizPausedAt = null;
+let quizPausedTotalMs = 0;
 
 /* ---------- CONTADOR DIÁRIO DE QUESTÕES (igual ao de páginas) ---------- */
 const questionLog = JSON.parse(localStorage.getItem('transpetro_questionlog') || '{}'); // {"YYYY-MM-DD": N}
@@ -1883,15 +1976,33 @@ function formatTime(totalSeconds){
 }
 function startQuizTimer(){
   quizStartTime = Date.now();
+  quizPaused = false; quizPausedAt = null; quizPausedTotalMs = 0;
   if(quizTimerInterval) clearInterval(quizTimerInterval);
   quizTimerInterval = setInterval(()=>{
+    if(quizPaused) return;
     const el = document.getElementById('qTimer');
-    if(el) el.textContent = '⏱️ ' + formatTime(Math.floor((Date.now()-quizStartTime)/1000));
+    if(el) el.textContent = '⏱️ ' + formatTime(Math.floor((Date.now()-quizStartTime-quizPausedTotalMs)/1000));
   }, 1000);
+}
+function toggleTimerPause(){
+  const btn = document.getElementById('pauseBtn');
+  if(!quizPaused){
+    quizPaused = true;
+    quizPausedAt = Date.now();
+    if(btn) btn.textContent = '▶️ Retomar';
+    const el = document.getElementById('qTimer');
+    if(el) el.textContent = '⏸️ Pausado em ' + formatTime(Math.floor((quizPausedAt-quizStartTime-quizPausedTotalMs)/1000));
+  } else {
+    quizPausedTotalMs += Date.now() - quizPausedAt;
+    quizPaused = false;
+    quizPausedAt = null;
+    if(btn) btn.textContent = '⏸️ Pausar';
+  }
 }
 function stopQuizTimer(){
   if(quizTimerInterval){ clearInterval(quizTimerInterval); quizTimerInterval = null; }
-  return quizStartTime ? Math.floor((Date.now()-quizStartTime)/1000) : 0;
+  if(quizPaused && quizPausedAt){ quizPausedTotalMs += Date.now()-quizPausedAt; quizPaused=false; }
+  return quizStartTime ? Math.floor((Date.now()-quizStartTime-quizPausedTotalMs)/1000) : 0;
 }
 function renderExamHistoryHTML(){
   const el = document.getElementById('examHistoryCard');
@@ -2074,7 +2185,8 @@ function renderQuestion(){
   answeredCurrent = false;
   selectedOption = null;
   const q = quiz[qIndex];
-  document.getElementById('qProgress').textContent = `Questão ${qIndex+1} de ${quiz.length}`;
+  const qCode = 'Q' + questions.indexOf(q);
+  document.getElementById('qProgress').textContent = `Questão ${qIndex+1} de ${quiz.length}  ·  Cód: ${qCode}`;
   document.getElementById('qDifficulty').innerHTML = `<span class="pill ${q.diff}">${q.diff==='easy'?'Fácil':q.diff==='medium'?'Médio':'Difícil'}</span>`;
   document.getElementById('qText').textContent = q.q;
   const optsEl = document.getElementById('qOptions'); optsEl.innerHTML='';
@@ -2143,7 +2255,8 @@ function answer(i){
   }
   saveState(); renderStats();
   const exp = document.getElementById('qExplain');
-  exp.textContent = q.exp; exp.classList.add('show');
+  exp.innerHTML = q.exp + `<br><span class="muted" style="font-size:.7rem">Código desta questão: Q${questions.indexOf(q)} (me diga esse código se encontrar algo errado aqui)</span>`;
+  exp.classList.add('show');
   document.getElementById('nextBtn').style.display='inline-block';
 }
 
@@ -2154,11 +2267,23 @@ function nextQuestion(){
 }
 
 function finishQuiz(){
+  const timeSeconds = stopQuizTimer();
   document.getElementById('quizCard').style.display='none';
   document.getElementById('resultCard').style.display='block';
   document.getElementById('resultScore').textContent = `${quizCorrect}/${quiz.length}`;
   const pct = Math.round(100*quizCorrect/quiz.length);
-  document.getElementById('resultDetail').textContent = `${pct}% de acerto neste simulado.`;
+  document.getElementById('resultDetail').textContent = `${pct}% de acerto neste simulado — tempo: ${formatTime(timeSeconds)}.`;
+  examHistory.push({
+    date: new Date().toLocaleDateString('pt-BR'),
+    label: quizMode || 'Simulado',
+    total: quiz.length,
+    correct: quizCorrect,
+    pct: pct,
+    timeSeconds: timeSeconds
+  });
+  saveExamHistory();
+  renderExamHistoryHTML();
+  renderDashboard();
 }
 
 function resetQuiz(){
@@ -2168,7 +2293,7 @@ function resetQuiz(){
   document.getElementById('customExamCard').style.display='block';
 }
 
-const BACKUP_KEYS = ['transpetro_state','transpetro_topicstats','transpetro_reads','transpetro_reviewlog','transpetro_dashcfg','transpetro_navorder','transpetro_exams'];
+const BACKUP_KEYS = ['transpetro_state','transpetro_topicstats','transpetro_reads','transpetro_reviewlog','transpetro_dashcfg','transpetro_navorder','transpetro_exams','transpetro_questionlog','transpetro_examhistory'];
 function exportBackup(){
   const data = {};
   BACKUP_KEYS.forEach(k=>{
