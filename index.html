@@ -343,6 +343,7 @@
   <section id="section-config" style="display:none">
     <div class="card" id="configStatsCard"></div>
     <div class="card" id="examSettingsCard"></div>
+    <div class="card" id="studyBlocksCard"></div>
     <div class="card" id="topicEditorCard"></div>
     <div class="card" id="navOrderCard"></div>
     <div class="card" id="dataBackupCard"></div>
@@ -1583,7 +1584,7 @@ function attachNavClicks(){
         document.getElementById('section-'+s).style.display = (s===sec) ? 'block':'none';
       });
       if(sec==='dashboard') renderDashboard();
-      if(sec==='config'){ renderConfigStats(); renderNavOrderSettings(); renderExamSettings(); renderTopicEditor(); renderBackupCard(); }
+      if(sec==='config'){ renderConfigStats(); renderNavOrderSettings(); renderExamSettings(); renderStudyBlocksEditor(); renderTopicEditor(); renderBackupCard(); }
     };
   });
 }
@@ -1654,7 +1655,8 @@ if(!localStorage.getItem('transpetro_pagefix_v1')){
   saveReviewLog();
   localStorage.setItem('transpetro_pagefix_v1', '1');
 }
-function todayKey(){ return new Date().toISOString().slice(0,10); }
+function dateKey(d){ const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+function todayKey(){ return dateKey(new Date()); }
 function logReview(topicId, delta){
   const key = todayKey();
   if(!reviewLog[key]) reviewLog[key] = {reads:0, byTopic:{}};
@@ -1742,19 +1744,28 @@ function refreshAllSubjectCharts(){
 }
 
 const WIDGET_LABELS = {
-  countdown: "Contagem regressiva e plano",
+  countdown: "Contagem regressiva até a prova",
+  plan: "Plano de estudo (blocos diários)",
+  week: "Questões da semana (contador semanal)",
   performance: "Desempenho diário/semanal/anual (páginas e revisões)",
   exercises: "Estatísticas de exercícios (mais treinado/mais fraco)",
   coverage: "Gráficos de cobertura de leitura",
   ranking: "Ranking de tópicos mais lidos",
   bySubject: "Gráficos por matéria",
 };
-const DEFAULT_ORDER = ["countdown","performance","exercises","coverage","ranking","bySubject"];
+const DEFAULT_ORDER = ["countdown","plan","week","performance","exercises","coverage","ranking","bySubject"];
 const dashboardConfig = Object.assign(
-  {countdown:true, performance:true, exercises:true, coverage:true, bySubject:true, ranking:true, order:DEFAULT_ORDER.slice()},
+  {countdown:true, plan:true, week:true, performance:true, exercises:true, coverage:true, bySubject:true, ranking:true, order:DEFAULT_ORDER.slice()},
   JSON.parse(localStorage.getItem('transpetro_dashcfg') || '{}')
 );
 // garante que todo widget novo apareça na ordem, mesmo em config salva antiga
+// widgets novos entram logo depois da contagem regressiva (para quem já tinha configuração salva)
+(function(){
+  let pos = dashboardConfig.order.indexOf('countdown') + 1;
+  ['plan','week'].forEach(k=>{
+    if(!dashboardConfig.order.includes(k)){ dashboardConfig.order.splice(pos, 0, k); pos++; }
+  });
+})();
 DEFAULT_ORDER.forEach(k=>{ if(!dashboardConfig.order.includes(k)) dashboardConfig.order.push(k); });
 
 function saveDashboardConfig(){ localStorage.setItem('transpetro_dashcfg', JSON.stringify(dashboardConfig)); }
@@ -1841,32 +1852,206 @@ function renderExamSettings(){
 }
 
 function renderCountdownHTML(){
-  const examTopics = topics; // Segurança do Trabalho + Matemática + Português = o que cai na prova
-  const unread = examTopics.filter(t=>t.ready && !(readCounts[t.id]>0));
-  const unreadPriority = unread.filter(t=>t.priority);
+  const sorted = [...examList].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(!sorted.length) return `<p class="muted" style="font-size:.85rem">Nenhuma prova cadastrada — adicione uma em ⚙️ Configurações.</p>`;
+  const nextExam = sorted[0];
+  return `<div style="display:flex;gap:14px;flex-wrap:wrap">
+    ${sorted.map(e=>`
+      <div style="text-align:center;min-width:90px">
+        <div style="font-size:${e.id===nextExam.id?'2.4rem':'1.4rem'};font-weight:800;color:var(--accent2)">${Math.max(0,daysUntil(e.date))}</div>
+        <div class="muted" style="font-size:.66rem;max-width:110px">${e.label}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ---------- BLOCOS DE ESTUDO (montados manualmente) ---------- */
+let studyBlocks = JSON.parse(localStorage.getItem('transpetro_studyblocks') || '[]'); // [{id,name,date,topicIds,doneDate}]
+let studyFocusId = null;
+function saveStudyBlocks(){ localStorage.setItem('transpetro_studyblocks', JSON.stringify(studyBlocks)); }
+function topicById(id){ return getAllTopics().find(x=>x.id===id); }
+function shortTitle(t){ return t.title.split('—')[0].trim(); }
+function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function nTop(n){ return n + ' ' + (n === 1 ? 'tópico' : 'tópicos'); }
+function fmtDate(k){ if(!k) return ''; const p = k.split('-'); return p[2]+'/'+p[1]; }
+function blockPages(b){ return b.topicIds.reduce((a,id)=>a + estimatePages(topicById(id)), 0); }
+function currentBlock(){
+  if(studyFocusId){ const f = studyBlocks.find(b=>b.id===studyFocusId); if(f) return f; }
+  const today = todayKey();
+  return studyBlocks.find(b=>b.date===today && !b.doneDate) || studyBlocks.find(b=>!b.doneDate) || null;
+}
+function syncTopicCounters(id){
+  const t = topicById(id); if(!t) return;
+  const n = readCounts[id]||0;
+  const a = document.getElementById('count-top-'+id); if(a) a.textContent = n;
+  const b = document.getElementById('count-bottom-'+id); if(b) b.textContent = n;
+  const p = document.getElementById('pagesTotal-'+id); if(p) p.textContent = n*estimatePages(t);
+}
+function goToSection(sec){
+  const el = document.querySelector('.navitem[data-section="'+sec+'"]');
+  if(el) el.click();
+}
+function focusStudyBlock(id){ studyFocusId = id; renderDashboard(); }
+function completeBlock(id){
+  const b = studyBlocks.find(x=>x.id===id);
+  if(!b || b.doneDate) return;
+  if(!b.topicIds.length){ alert('Este bloco está vazio. Adicione tópicos em Configurações → Blocos de estudo.'); return; }
+  if(!confirm('Concluir "' + b.name + '"? Isso soma +1 leitura em cada um dos ' + b.topicIds.length + ' tópicos do bloco (' + blockPages(b) + ' páginas).')) return;
+  b.topicIds.forEach(tid=>{ readCounts[tid] = (readCounts[tid]||0) + 1; logReview(tid, 1); });
+  b.doneDate = todayKey();
+  saveReadCounts(); saveStudyBlocks();
+  b.topicIds.forEach(syncTopicCounters);
+  studyFocusId = null;
+  renderDashboard(); refreshAllSubjectCharts();
+}
+function reopenBlock(id){
+  const b = studyBlocks.find(x=>x.id===id);
+  if(!b || !b.doneDate) return;
+  if(!confirm('Reabrir "' + b.name + '"? Isso retira 1 leitura de cada tópico do bloco.')) return;
+  b.topicIds.forEach(tid=>{ if((readCounts[tid]||0) > 0){ readCounts[tid] -= 1; logReview(tid, -1); } });
+  b.doneDate = null;
+  saveReadCounts(); saveStudyBlocks();
+  b.topicIds.forEach(syncTopicCounters);
+  studyFocusId = id;
+  renderDashboard(); refreshAllSubjectCharts();
+}
+function renderPlanHTML(){
+  if(!studyBlocks.length){
+    return `<p class="muted" style="font-size:.85rem;margin:0 0 10px">Você ainda não montou seus blocos de estudo. Divida o conteúdo em blocos (por exemplo, um por dia) em ⚙️ Configurações → Blocos de estudo.</p>
+      <button class="primary" style="padding:8px 14px;font-size:.85rem" onclick="goToSection('config')">Montar meus blocos</button>`;
+  }
+  const doneCount = studyBlocks.filter(b=>b.doneDate).length;
+  const pending = studyBlocks.length - doneCount;
+  const pct = Math.round(100*doneCount/studyBlocks.length);
+  const cur = currentBlock();
   const nextExam = [...examList].sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
   const daysLeft = nextExam ? Math.max(0, daysUntil(nextExam.date)) : null;
-  const perDay = (unread.length && daysLeft) ? Math.ceil(unread.length/daysLeft) : 0;
-  return `
-    ${examList.length ? `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">
-      ${[...examList].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(e=>`
-        <div style="text-align:center;min-width:90px">
-          <div style="font-size:${e.id===nextExam.id?'2.4rem':'1.4rem'};font-weight:800;color:var(--accent2)">${Math.max(0,daysUntil(e.date))}</div>
-          <div class="muted" style="font-size:.66rem;max-width:110px">${e.label}</div>
-        </div>
-      `).join('')}
-    </div>` : `<p class="muted" style="font-size:.85rem">Nenhuma prova cadastrada — adicione uma em ⚙️ Configurações.</p>`}
-    ${nextExam ? `
-    <div class="row" style="align-items:center;gap:20px;margin-bottom:2px">
-      <div class="stat" style="flex:1;min-width:120px"><b>${unread.length}</b><span>tópicos do edital ainda não lidos</span></div>
-      <div class="stat" style="flex:1;min-width:120px"><b>${perDay}</b><span>tópicos/dia p/ cobrir tudo 1x</span></div>
+  let html = `<div class="muted" style="font-size:.78rem;margin-bottom:6px">${doneCount} de ${studyBlocks.length} blocos concluídos${(daysLeft!==null && pending) ? ' · faltam '+pending+' blocos e '+daysLeft+' dias até a prova' : ''}</div>
+    <div style="background:var(--bg2);border-radius:6px;height:10px;overflow:hidden;margin-bottom:14px"><div style="width:${pct}%;height:100%;background:var(--accent)"></div></div>`;
+  if(cur){
+    const topicsHtml = cur.topicIds.map(id=>{
+      const t = topicById(id); if(!t) return '';
+      return `<div class="row" style="justify-content:space-between;margin-bottom:6px;gap:8px"><span style="font-size:.85rem">📖 ${shortTitle(t)}</span><span class="muted" style="font-size:.72rem">📄 ${estimatePages(t)}p · 👁️ ${readCounts[id]||0}x</span></div>`;
+    }).join('');
+    html += `<div style="padding:12px;border:1px solid var(--accent);border-radius:10px">
+      <div style="font-weight:700;margin-bottom:2px">${escAttr(cur.name)}${cur.date ? ' · 📅 '+fmtDate(cur.date) : ''}${cur.doneDate ? ' · ✅ concluído em '+fmtDate(cur.doneDate) : ''}</div>
+      <div class="muted" style="font-size:.72rem;margin-bottom:10px">${nTop(cur.topicIds.length)} · ${blockPages(cur)} páginas</div>
+      ${topicsHtml || '<p class="muted" style="font-size:.8rem">Bloco vazio — adicione tópicos em ⚙️ Configurações → Blocos de estudo.</p>'}
+      <div style="margin-top:10px">${cur.doneDate
+        ? `<button class="btn-print" onclick="reopenBlock('${cur.id}')">↩️ Reabrir bloco</button>`
+        : `<button class="primary" style="padding:8px 14px;font-size:.85rem" onclick="completeBlock('${cur.id}')">✅ Concluir bloco (+1 leitura em cada tópico)</button>`}</div>
+    </div>`;
+  } else {
+    html += `<p class="muted" style="font-size:.85rem">Todos os blocos concluídos 🎉 — agora é revisão e simulados.</p>`;
+  }
+  html += `<p class="muted" style="margin:14px 0 6px;font-size:.72rem">Todos os blocos (toque para ver):</p>` + studyBlocks.map(b=>`
+    <div class="row" style="justify-content:space-between;margin-bottom:4px;cursor:pointer;gap:8px" onclick="focusStudyBlock('${b.id}')">
+      <span style="font-size:.82rem">${b.doneDate ? '✅' : (b.date===todayKey() ? '👉' : '⏳')} ${escAttr(b.name)}${b.date ? ' · '+fmtDate(b.date) : ''}</span>
+      <span class="muted" style="font-size:.7rem">${nTop(b.topicIds.length)} · ${blockPages(b)}p</span>
+    </div>`).join('');
+  return html;
+}
+
+/* ---------- CONTADOR SEMANAL DE QUESTÕES ---------- */
+function renderWeekHTML(){
+  const now = new Date();
+  const dow = (now.getDay()+6)%7;                     // 0 = segunda
+  const labels = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const todayK = todayKey();
+  const days = labels.map((l,i)=>{
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()-dow+i);
+    const k = dateKey(d);
+    return {label:l, n:questionLog[k]||0, isToday:k===todayK, future:k>todayK};
+  });
+  const weekTotal = days.reduce((a,d)=>a+d.n,0);
+  const todayN = questionLog[todayK]||0;
+  const max = Math.max(1, ...days.map(d=>d.n));
+  const bars = days.map(d=>{
+    const h = d.n ? Math.max(6, Math.round(d.n/max*72)) : 3;
+    const color = d.isToday ? 'var(--accent)' : (d.future ? 'var(--border)' : 'rgba(45,212,191,.5)');
+    return `<div style="flex:1;text-align:center">
+      <div style="font-size:.8rem;font-weight:700;height:18px">${d.future ? '' : d.n}</div>
+      <div style="height:76px;display:flex;align-items:flex-end;justify-content:center"><div style="width:70%;height:${h}px;background:${color};border-radius:4px"></div></div>
+      <div class="muted" style="font-size:.68rem;margin-top:4px;${d.isToday?'color:var(--accent);font-weight:700':''}">${d.label}</div>
+    </div>`;
+  }).join('');
+  return `<div class="stats" style="margin-bottom:12px">
+      <div class="stat"><b>${todayN}</b><span>questões hoje</span></div>
+      <div class="stat"><b>${weekTotal}</b><span>questões nesta semana (seg a dom)</span></div>
+      <div class="stat" style="border-color:var(--accent)"><b>${state.totalAnswered||0}</b><span>total de questões feitas (desde o início)</span></div>
     </div>
-    ${unreadPriority.length ? `<p class="muted" style="margin:0 0 6px;font-size:.8rem"><b>Comece por estes (prioridade alta, ainda não lidos):</b></p>
-      <div>${unreadPriority.map(t=>`<span class="pill" style="background:rgba(239,68,68,.15);color:var(--hard);margin-bottom:6px;display:inline-block">⭐ ${t.title.split('—')[0].trim()}</span>`).join(' ')}</div>`
-    : unread.length ? `<p class="muted" style="margin:0;font-size:.8rem">Prioridades altas já lidas pelo menos 1x — siga pelos demais tópicos pendentes, depois entre em modo revisão + simulados.</p>`
-    : `<p class="muted" style="margin:0;font-size:.8rem">Você já abriu todo o conteúdo do edital pelo menos uma vez. A partir daqui, o foco vira revisão e Simulados Completos.</p>`}
-    ` : ''}
-  `;
+    <div style="display:flex;gap:6px;align-items:flex-end">${bars}</div>`;
+}
+
+/* ---------- editor dos blocos (Configurações) ---------- */
+function newBlockId(){ return 'b'+Date.now()+Math.floor(Math.random()*1000); }
+function afterBlocksChange(){ saveStudyBlocks(); renderStudyBlocksEditor(); renderDashboard(); }
+function addBlock(){ studyBlocks.push({id:newBlockId(), name:'Bloco '+(studyBlocks.length+1), date:'', topicIds:[], doneDate:null}); afterBlocksChange(); }
+function renameBlock(id, v){ const b = studyBlocks.find(x=>x.id===id); if(!b) return; b.name = (v||'').trim() || b.name; saveStudyBlocks(); renderDashboard(); }
+function setBlockDate(id, v){ const b = studyBlocks.find(x=>x.id===id); if(!b) return; b.date = v || ''; saveStudyBlocks(); renderDashboard(); }
+function moveBlock(id, dir){
+  const i = studyBlocks.findIndex(x=>x.id===id), j = i + dir;
+  if(i < 0 || j < 0 || j >= studyBlocks.length) return;
+  [studyBlocks[i], studyBlocks[j]] = [studyBlocks[j], studyBlocks[i]];
+  afterBlocksChange();
+}
+function deleteBlock(id){
+  if(!confirm('Excluir este bloco? (As leituras já marcadas continuam valendo.)')) return;
+  studyBlocks = studyBlocks.filter(x=>x.id!==id);
+  if(studyFocusId === id) studyFocusId = null;
+  afterBlocksChange();
+}
+function addTopicToBlock(id, val){
+  if(!val) return;
+  const b = studyBlocks.find(x=>x.id===id); if(!b) return;
+  const used = new Set(); studyBlocks.forEach(x=>x.topicIds.forEach(t=>used.add(t)));
+  if(val.indexOf('all:') === 0){
+    const s = getSubjects()[parseInt(val.slice(4),10)];
+    if(s) s.list.forEach(t=>{ if(t.ready && !used.has(t.id)) b.topicIds.push(t.id); });
+  } else if(!used.has(val)){
+    b.topicIds.push(val);
+  }
+  afterBlocksChange();
+}
+function removeTopicFromBlock(id, tid){
+  const b = studyBlocks.find(x=>x.id===id); if(!b) return;
+  b.topicIds = b.topicIds.filter(x=>x!==tid);
+  afterBlocksChange();
+}
+function renderStudyBlocksEditor(){
+  const el = document.getElementById('studyBlocksCard');
+  if(!el) return;
+  const used = new Set(); studyBlocks.forEach(b=>b.topicIds.forEach(t=>used.add(t)));
+  const free = getSubjects().map(s=>({label:s.label, list:s.list.filter(t=>t.ready && !used.has(t.id))}));
+  const freeTotal = free.reduce((a,s)=>a+s.list.length, 0);
+  const selectOptions = '<option value="">＋ Adicionar tópicos…</option>'
+    + '<optgroup label="Matéria inteira (todos os tópicos ainda sem bloco)">'
+    + free.map((s,i)=> s.list.length ? `<option value="all:${i}">${s.label} (${s.list.length} tópicos)</option>` : '').join('')
+    + '</optgroup>'
+    + free.map(s=> s.list.length ? `<optgroup label="${s.label}">${s.list.map(t=>`<option value="${t.id}">${t.n} · ${shortTitle(t)} (${estimatePages(t)}p)</option>`).join('')}</optgroup>` : '').join('');
+  const inputStyle = 'background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px;font-size:.8rem';
+  const blocksHtml = studyBlocks.map((b,i)=>`
+    <div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px">
+      <div class="row" style="gap:8px;margin-bottom:8px;align-items:center">
+        <input type="text" value="${escAttr(b.name)}" onchange="renameBlock('${b.id}', this.value)" style="flex:2;min-width:140px;${inputStyle}">
+        <input type="date" value="${b.date||''}" onchange="setBlockDate('${b.id}', this.value)" style="${inputStyle}">
+        <button class="microbtn" style="border:1px solid var(--border);border-radius:4px;padding:2px 8px" onclick="moveBlock('${b.id}',-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="microbtn" style="border:1px solid var(--border);border-radius:4px;padding:2px 8px" onclick="moveBlock('${b.id}',1)" ${i===studyBlocks.length-1?'disabled':''}>↓</button>
+        <button class="microbtn" style="border:1px solid var(--border);border-radius:4px;padding:2px 8px" onclick="deleteBlock('${b.id}')" title="Excluir bloco">🗑️</button>
+      </div>
+      <div style="margin-bottom:8px">${b.topicIds.length ? b.topicIds.map(tid=>{ const t = topicById(tid); return t ? `<span class="pill" style="background:rgba(45,212,191,.12);color:var(--accent);margin-bottom:6px;display:inline-block">${shortTitle(t)} <a style="cursor:pointer;margin-left:4px" onclick="removeTopicFromBlock('${b.id}','${tid}')">✕</a></span>` : ''; }).join(' ') : '<span class="muted" style="font-size:.78rem">Nenhum tópico ainda.</span>'}</div>
+      <div class="row" style="gap:8px;margin:0;align-items:center">
+        <select onchange="addTopicToBlock('${b.id}', this.value)" style="max-width:100%;font-size:.8rem;padding:8px">${selectOptions}</select>
+        <span class="muted" style="font-size:.72rem">${nTop(b.topicIds.length)} · ${blockPages(b)} páginas${b.doneDate ? ' · ✅ concluído' : ''}</span>
+      </div>
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="widget-title">🗓️ Blocos de estudo (monte do seu jeito)</div>
+    <p class="muted" style="margin:0 0 12px;font-size:.78rem">Divida o conteúdo em blocos — por exemplo, um por dia. O bloco do dia aparece no Dashboard e, ao concluir, soma +1 leitura em cada tópico dele. Cada tópico fica em um só bloco, e só entram tópicos que já têm conteúdo.</p>
+    ${blocksHtml || '<p class="muted" style="font-size:.8rem">Nenhum bloco ainda.</p>'}
+    <div class="row" style="gap:8px;margin-top:8px;align-items:center">
+      <button class="primary" onclick="addBlock()">＋ Novo bloco</button>
+      <span class="muted" style="font-size:.78rem">Tópicos ainda sem bloco: <b style="color:var(--text)">${freeTotal}</b></span>
+    </div>`;
 }
 
 function donutSVG(pct){
@@ -1990,7 +2175,7 @@ function dayPages(entry){
 function renderPerformanceHTML(){
   const now = new Date();
   const dayMs = 86400000;
-  const keyOf = i => new Date(now.getTime()-i*dayMs).toISOString().slice(0,10);
+  const keyOf = i => dateKey(new Date(now.getFullYear(), now.getMonth(), now.getDate()-i));
   function sumRange(days){
     let reads=0, pages=0, questions=0;
     for(let i=0;i<days;i++){
@@ -2099,6 +2284,8 @@ function renderRankingHTML(){
 
 const WIDGET_RENDERERS = {
   countdown: renderCountdownHTML,
+  plan: renderPlanHTML,
+  week: renderWeekHTML,
   performance: renderPerformanceHTML,
   exercises: renderExercisesHTML,
   coverage: renderCoverageHTML,
@@ -2107,6 +2294,8 @@ const WIDGET_RENDERERS = {
 };
 const WIDGET_TITLES = {
   countdown: '🗓️ Contagem regressiva até a prova',
+  plan: '📚 Plano de estudo — bloco de hoje',
+  week: '📅 Questões feitas na semana',
   performance: '📈 Desempenho por dia — páginas lidas e questões feitas',
   exercises: '📝 Exercícios — acerto e treino por matéria',
   coverage: '📚 Cobertura geral (todas as matérias somadas)',
@@ -2655,7 +2844,7 @@ function resetQuiz(){
   document.getElementById('customExamCard').style.display='block';
 }
 
-const BACKUP_KEYS = ['transpetro_state','transpetro_topicstats','transpetro_reads','transpetro_reviewlog','transpetro_dashcfg','transpetro_navorder','transpetro_exams','transpetro_questionlog','transpetro_examhistory','transpetro_topicoverrides'];
+const BACKUP_KEYS = ['transpetro_state','transpetro_topicstats','transpetro_reads','transpetro_reviewlog','transpetro_dashcfg','transpetro_navorder','transpetro_exams','transpetro_questionlog','transpetro_examhistory','transpetro_topicoverrides','transpetro_studyblocks'];
 function exportBackup(){
   const data = {};
   BACKUP_KEYS.forEach(k=>{
